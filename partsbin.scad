@@ -27,7 +27,7 @@ function Template(keystring) =
 	concat("&", [ let (s = split(keystring, ",")) [ for (i=range(0, len(s)-1)) stripR(stripL(s[i], " "), " ") ] ]);
 	
 // create an Object structure
-function Obj(prototypes=[], type, values) = 
+function Obj(type, values, prototypes=[]) = 
 	concat("$", [prototypes], [type[1]], [values]);
 
 // access a named field from an object, 
@@ -99,12 +99,12 @@ socketHeadT = Template("head_h, head_d, socket_d");
 stepperT = Template("screw_size, screw_spacing, screw_depth, w, boss_d, boss_h, model");
 extrusionT = Template("side_w, slot_w, lip_h, t_w, t_depth, corner_r, end_tap");
 
-m3_thread = Obj([], threadT, [3, 2.5, 0.5]);
+m3_thread = Obj(threadT, [3, 2.5, 0.5]);
 
-m3_socket_cap = Obj([m3_thread], socketHeadT, [2.4, 5.5, 2.5]);
+m3_socket_cap = Obj(socketHeadT, [2.4, 5.5, 2.5], [m3_thread]);
 
-m3_scs = Obj([m3_socket_cap], screwT, [25]);
-echo(v(m3_scs, "thread_minor"));
+m3_scs = Obj(screwT, [25], [m3_socket_cap]);
+echo(v(m3_scs, "pilot_d"));
 debugStruct(m3_scs);
 
 
