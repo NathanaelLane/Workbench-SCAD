@@ -27,8 +27,8 @@ function Template(keystring) =
 	concat("&", [ let (s = split(keystring, ",")) [ for (i=range(0, len(s)-1)) stripR(stripL(s[i], " "), " ") ] ]);
 	
 // create an Object structure
-function Obj(type, values, prototypes=[]) = 
-	concat("$", [prototypes], [type[1]], [values]);
+function Obj(template, values, prototypes=[]) = 
+	concat("$", [prototypes], [template[1]], [values]);
 
 // access a named field from an object, 
 // including from within the prototype heirarchy, 
@@ -91,6 +91,12 @@ module debugStruct(structure, indent = "") {
 	}	
 }
 
+// helper function for creating many different object types with the same Template
+function Collection(template, kvp, prototypes=[]) = 
+	let (ordered = transpose(kvp))
+		let (objs = [ for (o=ordered[1]) Obj(template, o, prototypes) ])
+			Obj(Template(restring(ordered[0], sep=",")), objs);
+
 // test code
 
 threadT = Template("nominal_d, pilot_d, pitch");
@@ -106,6 +112,9 @@ m3_socket_cap = Obj(socketHeadT, [2.4, 5.5, 2.5], [m3_thread]);
 m3_scs = Obj(screwT, [25], [m3_socket_cap]);
 echo(v(m3_scs, "pilot_d"));
 debugStruct(m3_scs);
+
+k = [["a", [1]], ["b", [2]]];
+debugStruct(Collection(Template("num"), k, [m3_scs]));
 
 
 
