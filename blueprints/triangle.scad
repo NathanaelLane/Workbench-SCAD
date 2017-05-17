@@ -52,4 +52,10 @@ module triangle(b = 0, h = 0, s = 0, a = 0, base_origin = false){
 $fa = 5;
 $fs = 0.05;
 
-triangle(b = 10, a = 60, baseOrigin = true);
+use <workbench/multitool.scad>
+
+grid_array(){
+	triangle(b = 10, a = 60, base_origin = true);
+	triangle(b=10, h=10);
+	triangle(a=60, h = 10);
+}
