@@ -114,7 +114,7 @@ $fa = 5;
 $fs = 0.05;
 
 
-grid_spacing(spacing = 12){
+grid_array(spacing = 12){
   
   square(10);
 

@@ -89,7 +89,7 @@ module stretch(dim = x(10)){
 }
 
 // arrange child objects in an organized grid
-module grid_spacing(max_per_line = 10, spacing = 50){
+module grid_array(max_per_line = 10, spacing = 50){
 
 	for(n = [0:$children - 1])
 		translate([(n % max_per_line) * spacing, floor(n / max_per_line) * spacing, 0])
