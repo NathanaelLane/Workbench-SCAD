@@ -16,9 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use <workbench/multitool.scad>
 
-module vertical_hole(r = 1, d = 0, point = true){
+/*
+ * [2D] Creates a shape commonly used to avoid messy overhangs >45 degrees 
+ * when 3D-printing round holes in a vertical orientation.
+ * 
+ * - r: [number] circle radius (default: 1)
+ * - d: [number] circlee diameter (default: undefined)
+ * - point: [boolean] if true, the top of the circle tapers to a point 
+ *     (the reprap "teardrop" shape) instead of a horizontal overhang. Use this option for
+ *     large holes where the overhang gap would be too wide for your printer to bridge.
+ * 
+ */
+module vertical_hole(r = 1, d = 0, point = false){
 	
 	_r = (d == 0) ? r : d / 2;
 	
@@ -46,6 +56,13 @@ module vertical_hole(r = 1, d = 0, point = true){
 	}
 }
 
+
+// test code
 $fa = 5;
 $fs = 0.05;
-vertical_hole(d = 12, point = false);
+use <workbench/multitool.scad>
+grid_array() {
+	vertical_hole();
+	vertical_hole(d = 12);
+	vertical_hole(r = 6, point = true);
+}

@@ -17,22 +17,40 @@
  */
 
 
-
 // Partsbin: - keep your data organized
 
 use <workbench/multitool.scad>
 
-// create a Type structure
+/*
+ * [template] create a Template structure
+ * 
+ * - keystring: [string] a comma-separated list of keys
+ */
 function Template(keystring) = 
 	concat("&", [ let (s = split(keystring, ",")) [ for (i=range(0, len(s)-1)) stripR(stripL(s[i], " "), " ") ] ]);
 	
-// create an Object structure
+/* 
+ * [object] create an Object structure
+ * 
+ * - template: [template] 
+ * - values: [array] populate the template fields
+ * - prototypes: [array[object]] define inheritance chains. 
+ *     If a key is not found in an object's own list of properties,
+ *     all of its prototypes are searched recursively for a value corresponding to the given key.
+ */
 function Obj(template, values, prototypes=[]) = 
 	concat("$", [prototypes], [template[1]], [values]);
 
-// access a named field from an object, 
-// including from within the prototype heirarchy, 
-// recursively using key heirarchy strings
+/* 
+ * access a named field from an object, including from within the prototype heirarchy, 
+ * recursively using key heirarchy strings. If the object does not contain a value for the given key, 
+ * behavior is undefined. 
+ * 
+ * - obj: [object] the object to search
+ * - keys: [string] a string representing a sequential set of keys separated by the "." character,
+ *     e.g. "param.subparam.value." The value of the first (leftmost) key will be treated as an object,
+ *     within which the next key is queried, and so forth until the value corresponding to the final key is returned.
+ */
 function v(obj, keys) = _v(obj, split(keys, "."));
 
 // use key heirarchy arrays internally
@@ -66,9 +84,13 @@ function _protoV(obj, key) =
 				val
 	][0];
 
-// print a structure to the console (including all fields and prototypes in full)
-module debugStruct(structure, indent = "") {
-	lead = str("> ", indent);
+/*
+ * [echo] print a structure to the console (including all fields and prototypes in full)
+ * 
+ * - structure: [object],[template]
+ */
+module debugStruct(structure, _indent = "") {
+	lead = str("> ", _indent);
 	tab = "    ";
 	if(structure[0] == "&") {
 		echo(str(lead, "Template structure"));
@@ -79,11 +101,11 @@ module debugStruct(structure, indent = "") {
 		if (structure[0] == "$") {
 			echo(str(lead, "Object structure"));
 			for(i = range(0, len(structure[1])-1)) {
-				debugStruct(structure[1][i], str(indent, tab));
+				debugStruct(structure[1][i], str(_indent, tab));
 			}
 			for(i = range(0, len(structure[2])-1)) {
 				echo(str(lead, tab, tab, structure[2][i], ": "));
-				debugStruct(structure[3][i], str(indent, tab, tab, tab));
+				debugStruct(structure[3][i], str(_indent, tab, tab, tab));
 			}
 		} else {
 			echo(str(lead, structure));
@@ -91,7 +113,16 @@ module debugStruct(structure, indent = "") {
 	}	
 }
 
-// helper function for creating many different object types with the same Template
+/* 
+ * [object] helper function for creating many different object types with the same Template
+ * 
+ * - template: [template] used by all child objects
+ * - kvp: [array[string, array]] an array of key-value pairs, where the "key"
+ *     will be included in the returned "collection" object's template, while the "value" is 
+ *     an array of values which match the "template" parameter and will be used to create the
+ * 		 child object corresponding to the given key
+ * - prototypes: [array[object]] used by all child objects
+ */
 function Collection(template, kvp, prototypes=[]) = 
 	let (ordered = transpose(kvp))
 		let (objs = [ for (o=ordered[1]) Obj(template, o, prototypes) ])

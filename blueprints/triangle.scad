@@ -18,11 +18,13 @@
 
 
 /*
- * -b: length of base
- * -h: base-to-apex distance
- * -s: side length
- * -a: angle of apex corner
- * -if more than two of b, d, s, and a are defined, the outcome is undefined
+ * [2D] Creates an isosceles triangle given two of the following parameters. 
+ * If more than two parameters are specified, the outcome is undefined.
+ * 
+ * - b: [number] length of base
+ * - h: [number] base-to-apex distance (height)
+ * - s: [number] length of sides
+ * - a: [number] apex angle
  */
 module triangle(b = 0, h = 0, s = 0, a = 0, base_origin = false){
 	

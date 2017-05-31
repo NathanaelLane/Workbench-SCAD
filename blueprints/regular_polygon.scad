@@ -17,17 +17,23 @@
  */
 
 use <workbench/blueprints/triangle.scad>
-use <workbench/multitool.scad>
 
 
-// helper function to compute corner radius from side (tangent) radius
+/*
+ * [number] helper function to compute corner radius from side (tangent) radius
+ * 
+ * - r: [number] radius
+ * - ns: [integer] number of sides in desired output shape
+ */
 function corner_radius(r, ns=6) = r / cos(180/ns);
 
 /*
- * -r: radius (measured from center to flat, not center to corner)
- * -d: diameter (if both radius and diameter are specified, behavior is undefined)
- * -ns: desired number of sides
- * -sl: desired minimum side length
+ * [2D] arbitary regular polygons
+ * 
+ * - r: [number] radius (measured from center to flat, not center to corner)
+ * - d: [number] diameter (if both radius and diameter are specified, behavior is undefined)
+ * - ns: [integer] desired number of sides
+ * - sl: [number] desired minimum side length (OpenSCAD's built-in hard minimum is 0.01)
  */
 module regular_polygon(r=0, d=2, ns=6, sl=0.01) {
 	
@@ -56,19 +62,18 @@ module regular_polygon(r=0, d=2, ns=6, sl=0.01) {
 		}else{
 		
 			rotate(z(90))		
-				circle(r = cornerRadius(r), $fa = a, $fs = sl);
+				circle(r = corner_radius(r), $fa = a, $fs = sl);
 		}
 }
 
 // test code
-
-grid_spacing(spacing = 30, max_per_line = 4){
-	regpol(r = 10, ns = 3);
-	regpol(r = 10, ns = 4);
-	regpol(r = 10, ns = 5);
-	regpol(r = 10, ns = 6);
-	regpol(r = 10, ns = 7);
-	regpol(r = 10, ns = 8);
-	regpol(r = 10, ns = 25);
-	regpol(r = 10, ns = 300);
+use <workbench/multitool.scad>
+grid_array(spacing = 30, max_per_line = 4){
+	regular_polygon(r = 10, ns = 3);
+	regular_polygon(r = 10, ns = 4);
+	regular_polygon(r = 10, ns = 5);
+	regular_polygon(r = 10, ns = 300);
+	regular_polygon(r = 5, sl = 10);
+	regular_polygon(r = 5, sl = 9.99);
+	regular_polygon(r = 0);
 }
