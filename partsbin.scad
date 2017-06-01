@@ -27,8 +27,13 @@ use <workbench/multitool.scad>
  * - keystring: [string] a comma-separated list of keys
  */
 function Template(keystring) = 
-	concat("&", [ let (s = split(keystring, ",")) [ for (i=range(0, len(s)-1)) stripR(stripL(s[i], " "), " ") ] ]);
-	
+	_Template( 
+		let (s = split(keystring, ",")) 
+			[ for (i=range(0, len(s)-1)) 
+				stripR(stripL(s[i], " "), " ") 
+			]);
+
+function _Template(arr) = ["&", arr];
 /* 
  * [object] create an Object structure
  * 
@@ -41,10 +46,10 @@ function Template(keystring) =
  */
 function Obj(template, values, prototypes=[]) = 
 	template[0] == "&" ?
-		concat("$", [prototypes], [template[1]], [values])
+		["$", prototypes, template[1], values]
 	:
 		template[0] == "$" ?
-			concat("$", [concat(template[1], prototypes)], [template[2]], [values])
+			["$", concat(template[1], prototypes), template[2], values]
 		:
 			undef;
 /* 
@@ -123,16 +128,18 @@ module debug_struct(structure, _indent = "") {
  * [object] helper function for creating many different object types with the same Template
  * 
  * - template: [template] used by all child objects
- * - kvp: [array[string, array]] an array of key-value pairs, where the "key"
- *     will be included in the returned "collection" object's template, while the "value" is 
- *     an array of values which match the "template" parameter and will be used to create the
- * 		 child object corresponding to the given key
- * - prototypes: [array[object]] used by all child objects
- */
-function Collection(template, kvp, prototypes=[]) = 
-	let (ordered = transpose(kvp))
-		let (objs = [ for (o=ordered[1]) Obj(template, o, prototypes) ])
-			Obj(Template(restring(ordered[0], sep=",")), objs);
+ * - data: [array[array]] an array of arrays containing a key followed by template-matched data fields
+ * - common_protos: [array[object]] prototype chain to be used by all child objects
+ * - key_slice: [array[integer]] a range of indices in the inner data arrays whose values should be used
+ *     in combination as each object's access key in the collection. Chosen values are joined using the "_"
+ *     character to form the key.
+ * - proto_LUT: [object] an Object to be used as a lookup, keyed by the first value in each inner data array,
+ *     for creating child-specific prototype chains
+ */			
+function Collection(template, data, common_protos=[], key_slice = [0], proto_LUT=undef) = 
+	Obj(
+		_Template([ for (d=data) restring([ for (i=key_slice) d[i] ], "_") ]),
+		[ for (d=data) Obj(template, slice(d, 1), proto_LUT==undef ? common_protos : concat(common_protos, [v(proto_LUT, d[0])])) ]);
 
 // test code
 
@@ -150,8 +157,9 @@ debug_struct(m3_scs);
 
 debug_struct(Obj(m3_socket_cap, [1, 2, 3]));
 
-k = [["a", [1]], ["b", [2]]];
+k = [["a", 1], ["b", 2]];
 debug_struct(Collection(Template("num"), k, [m3_scs]));
+
 
 
 
