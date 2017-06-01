@@ -32,15 +32,21 @@ function Template(keystring) =
 /* 
  * [object] create an Object structure
  * 
- * - template: [template] 
+ * - template: [template], [object] If an <object> is specified, the new object is created using the
+ *     "template" object's property names as well as any prototypes that the template object may possess
  * - values: [array] populate the template fields
  * - prototypes: [array[object]] define inheritance chains. 
  *     If a key is not found in an object's own list of properties,
  *     all of its prototypes are searched recursively for a value corresponding to the given key.
  */
 function Obj(template, values, prototypes=[]) = 
-	concat("$", [prototypes], [template[1]], [values]);
-
+	template[0] == "&" ?
+		concat("$", [prototypes], [template[1]], [values])
+	:
+		template[0] == "$" ?
+			concat("$", [concat(template[1], prototypes)], [template[2]], [values])
+		:
+			undef;
 /* 
  * access a named field from an object, including from within the prototype heirarchy, 
  * recursively using key heirarchy strings. If the object does not contain a value for the given key, 
@@ -89,7 +95,7 @@ function _protoV(obj, key) =
  * 
  * - structure: [object],[template]
  */
-module debugStruct(structure, _indent = "") {
+module debug_struct(structure, _indent = "") {
 	lead = str("> ", _indent);
 	tab = "    ";
 	if(structure[0] == "&") {
@@ -101,11 +107,11 @@ module debugStruct(structure, _indent = "") {
 		if (structure[0] == "$") {
 			echo(str(lead, "Object structure"));
 			for(i = range(0, len(structure[1])-1)) {
-				debugStruct(structure[1][i], str(_indent, tab));
+				debug_struct(structure[1][i], str(_indent, tab));
 			}
 			for(i = range(0, len(structure[2])-1)) {
 				echo(str(lead, tab, tab, structure[2][i], ": "));
-				debugStruct(structure[3][i], str(_indent, tab, tab, tab));
+				debug_struct(structure[3][i], str(_indent, tab, tab, tab));
 			}
 		} else {
 			echo(str(lead, structure));
@@ -133,8 +139,6 @@ function Collection(template, kvp, prototypes=[]) =
 threadT = Template("nominal_d, pilot_d, pitch");
 screwT = Template("length");
 socketHeadT = Template("head_h, head_d, socket_d");
-stepperT = Template("screw_size, screw_spacing, screw_depth, w, boss_d, boss_h, model");
-extrusionT = Template("side_w, slot_w, lip_h, t_w, t_depth, corner_r, end_tap");
 
 m3_thread = Obj(threadT, [3, 2.5, 0.5]);
 
@@ -142,10 +146,12 @@ m3_socket_cap = Obj(socketHeadT, [2.4, 5.5, 2.5], [m3_thread]);
 
 m3_scs = Obj(screwT, [25], [m3_socket_cap]);
 echo(v(m3_scs, "pilot_d"));
-debugStruct(m3_scs);
+debug_struct(m3_scs);
+
+debug_struct(Obj(m3_socket_cap, [1, 2, 3]));
 
 k = [["a", [1]], ["b", [2]]];
-debugStruct(Collection(Template("num"), k, [m3_scs]));
+debug_struct(Collection(Template("num"), k, [m3_scs]));
 
 
 
