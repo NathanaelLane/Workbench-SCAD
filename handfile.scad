@@ -18,35 +18,59 @@
  
 // Handfile: for those nice, finished edges
 
-use <workbench/multitool.scad>
+
+/*
+ * [2D], [3D] chamfer a 2D shape if h=0, or an extruded 3D shape if h>0.
+ * This has the effect of "flattening" out rounded edges
+ * 
+ * - e: [number] edge radius. Default is 1
+ * - h: [number] extrude height. Default is 0 (2D shape)
+ * - convexity: [integer] pass-through for linear_extrude() convexity parameter 
+ */
+module chamfer(e = 1, h = 0, convexity){ _edge(e, h, convexity, fillet = false) children(); }
+
+/*
+ * [2D], [3D] fillet a 2D shape if h=0, or an extruded 3D shape if h>0
+ * 
+ * - e: [number] edge radius. Default is 1
+ * - h: [number] extrude height. Default is 0 (2D shape)
+ * - convexity: [integer] pass-through for linear_extrude() convexity parameter 
+ */
+module fillet(e = 1, h = 0, convexity){ _edge(e, h, convexity, fillet = true) children(); }
 
 
-// chamfer a 2D shape if h=0, or an extruded 3D shape if h>0
-module chamfer(e = 1, h = 0, c = 4){ _edge(e, h, c, fillet = false) children(); }
-
-// fillet a 2D shape if h=0, or an extruded 3D shape if h>0
-module fillet(e = 1, h = 0, c = 4){ _edge(e, h, c, fillet = true) children(); }
-
-// chamfer only along the extruded plane of a 3D shape. 
-// This allows for combined-edge operations such as filleted chamfers
-module chamfer_extrude(e = 1, h = 10, c = 4, top = true, bottom = true){
+/* 
+ * [3D] chamfer only along the extruded plane of a 3D shape. 
+ * This allows for combined-edge operations such as filleted chamfers
+ * 
+ * - e: [number] edge radius. Default is 1
+ * - h: [number] extrude height. Default is 10
+ * - convexity: [integer] pass-through for linear_extrude() convexity parameter
+ * - top: [boolean] chamfer top of extrude. Default true
+ * - bottom: [boolean] chamfer bottom of extrude. Default false
+ */
+module chamfer_extrude(e = 1, h = 10, convexity, top = true, bottom = true){
   
   start = bottom ? e : 0;
   finish = top ? h - e : h;
   
   hull(){
     
-    linear_extrude(height = h, convexity = c)
+    linear_extrude(height = h, convexity = convexity)
       offset(r = -e)
         children();
         
     translate(z(start))
-      linear_extrude(height = finish - start, convexity = c)
+      linear_extrude(height = finish - start, convexity = convexity)
         children();
   }
 }
 
-// primitive type for easy chamfering via the Minkowski Sum operator
+/* 
+ * [3D] octahedron primitive for easy chamfering via the Minkowski Sum operator
+ * 
+ * - r: [number] radius
+ */
 module octahedron(r = 0){
 
 	p = [
@@ -73,7 +97,7 @@ module octahedron(r = 0){
 	polyhedron(points = p, faces = t, convexity = 2);
 }
 
-module _edge(e, h, c, fillet){
+module _edge(e, h, convexity, fillet){
 
   if(h == 0){
     
@@ -94,7 +118,7 @@ module _edge(e, h, c, fillet){
   
     minkowski(){
       translate(z(e))
-        linear_extrude(h - (e*2), convexity = c)
+        linear_extrude(h - (e*2), convexity = convexity)
           offset(-e)
             children();
         
@@ -113,13 +137,28 @@ module _edge(e, h, c, fillet){
 $fa = 5;
 $fs = 0.05;
 
+use <workbench/multitool.scad>
 
-grid_array(spacing = 12){
+grid_array(spacing = 12, max_per_line = 4){
   
   square(10);
 
   chamfer_extrude() fillet() square(10);
   
   chamfer(h=10) square(10);
+  
+  fillet(h=10) square(10);
+  
+  fillet(h=10, e=2) circle(5);
+  
+  chamfer(h=10, e=3) circle(5);
+  
+  fillet(e = 4, h = 10) square(10);
+  
+  chamfer() fillet() square(10);
+  
+  fillet() chamfer() square(10);
+  
+  chamfer_extrude() circle(5);
 }
 
