@@ -54,11 +54,12 @@ function restring(argv, sep="", _i=0) =
  * [array] extract a slice of an array, hi-inclusive.
  * 
  * - arr: [array]
- * - lo: [integer] lowest index to include. Clamped to 0
- * - hi: [integer] highest index to include. Clamped to len(arr) - 1
+ * - lo: [integer] lowest index to include. Clamped to 0 (the default argument)
+ * - hi: [integer] highest index to include. Clamped to len(arr) - 1 (the default argument)
  */
-function slice(arr, lo, hi) = 
-	[ for (i=range(max(0, lo), min(hi, len(arr)-1))) arr[i] ];
+function slice(arr, lo, hi=undef) = 
+	let (_hi = hi==undef ? len(arr)-1 : hi)
+	[ for (i=range(max(0, lo), min(_hi, len(arr)-1))) arr[i] ];
 	
 
 /* 
