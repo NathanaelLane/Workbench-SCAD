@@ -27,8 +27,7 @@ _TSLOT = Collection(
 	[
 		["t30", [30, 8, 2, 16.5, 9, 2, undef]],
 		["t15", [15, 3.4, 1.1, 5.7, 4.7, 3, undef]]
-	]
-	);
+	]);
 
 /*
  * [object] create a new object representing a segment of aluminum extrusion
@@ -38,62 +37,62 @@ _TSLOT = Collection(
  */ 
 function TSlotExtrusion(size, length) = Obj(Template("l"), [length], [v(_TSLOT, size)]);
 
-/*
- * [2D] render a profile/cross-section based on the given tslot object
- * 
- * - p: [object] the desired profile to render
- */
-module tslot_profile(p){
-	
-	difference(){
-		
-		// basic profile 
-		fillet(r = v(p, "corner_r")) square(v(p, "side_w"), center = true);
-
-		// t-slot cutouts		
-		for(a = [0:90:270])
-			rotate([0, 0, a]){
-
-				slot_offset = v(p, "side_w") / 2 - v(p, "t_depth");
-				angle_offset = (v(p, "t_w") - v(p, "slot_w") * 1.1) / 2;
-		
-				translate([v(p, "slot_w") / -2, slot_offset, 0])	
-					square([v(p, "slot_w"), v(p, "t_depth")]);
-		
-				translate([0, v(p, "side_w") / 2 - v(p, "t_depth"), 0])	
-					intersection(){
-			
-						translate([0, v(p, "slot_w") * -0.55, 0])
-							rotate([0, 0, 180])
-								triangle(a = 90, h = v(p, "side_w"));
-					
-						translate([v(p, "t_w") / -2, 0, 0])	
-							square([v(p, "t_w"), v(p, "t_depth") - v(p, "lip_h")]);
-					}
-			}
-
-			//center hole
-			circle(d = v(p, "end_screw.pilot_d"));
-		}
-}
 
 /*
- * [3D] render a segment of extrusion based on the given tslot object
+ * [2D], [3D] render a tslot profile or a segment of extrusion based on the given tslot object
  * 
  * - tsl: [object] the desired extrusion to render
  */
 module tslot_extrusion(tsl){
 	
+	module tslot_profile(p){
+	
+		difference(){
+			
+			// basic profile 
+			fillet(r = v(p, "corner_r")) square(v(p, "side_w"), center = true);
+
+			// t-slot cutouts		
+			for(a = [0:90:270])
+				rotate([0, 0, a]){
+
+					slot_offset = v(p, "side_w") / 2 - v(p, "t_depth");
+					angle_offset = (v(p, "t_w") - v(p, "slot_w") * 1.1) / 2;
+			
+					translate([v(p, "slot_w") / -2, slot_offset, 0])	
+						square([v(p, "slot_w"), v(p, "t_depth")]);
+			
+					translate([0, v(p, "side_w") / 2 - v(p, "t_depth"), 0])	
+						intersection(){
+				
+							translate([0, v(p, "slot_w") * -0.55, 0])
+								rotate([0, 0, 180])
+									triangle(a = 90, h = v(p, "side_w"));
+						
+							translate([v(p, "t_w") / -2, 0, 0])	
+								square([v(p, "t_w"), v(p, "t_depth") - v(p, "lip_h")]);
+						}
+				}
+
+				//center hole
+				circle(d = v(p, "end_screw.pilot_d"));
+			}
+	}
+	
 	echo(str(v(tsl, "side_w"), "x", v(tsl, "side_w"), " T-slot aluminum extrusion"));
 	
 	color(vec(173 / 255))
 		render(convexity = 10)
-			linear_extrude(height = v(tsl, "l"), convexity = 10)
-				tslot_profile(tsl);
+			if(v(tsl, "l") != undef){
+				linear_extrude(height = v(tsl, "l"), convexity = 10)
+					tslot_profile(tsl);
+			}else{
+					tslot_profile(tsl);
+			}
 }
 
 // test code
 grid_array(){
   tslot_extrusion(TSlotExtrusion("t15", 200));
-  tslot_extrusion(TSlotExtrusion("t30", 10));
+  tslot_extrusion(TSlotExtrusion("t30"));
 }
