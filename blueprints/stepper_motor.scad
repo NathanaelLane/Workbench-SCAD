@@ -20,21 +20,19 @@ use <workbench/handfile.scad>
 use <workbench/partsbin.scad>
 use <workbench/multitool.scad>
 
-_stepper_types = Collection(Template("size, screw_spacing, screw, screw_depth, w, shaft_d, boss_d, boss_h"),
+_stepper_types = Collection(
+	Template("size, screw_spacing, screw, screw_depth, w, shaft_d, boss_d, boss_h"),
 	[
-		["nema17", ["NEMA 17", 31, undef, 4.5, 42.5, 5, 22, 2]]
+		["nema17", "NEMA 17", 31, undef, 4.5, 42.5, 5, 22, 2]
 	]);
 
 _STEPPER = Template("product_name, body_l, shaft_l, steps_per_rev, torque, coil_current");
-
-_stepper_list = [
-	["nema17", "default", 48, 22, 200, undef, undef]
-	];
 	
-_stepper_library = Obj(
-	Template(restring(transpose(_stepper_list)[1], ",")),
-	[ for (ar=_stepper_list) Obj(_STEPPER, slice(ar, 1), [v(_stepper_types, ar[0])]) ]);
-
+_stepper_library = Collection(
+	Template("product_name, body_l, shaft_l, steps_per_rev, torque, coil_current"),
+	[
+		["nema17", "default", 48, 22, 200, undef, undef]
+	], [], [1], _stepper_types);
 
 /*
  * [string] return the empty Stepper base object corresponding to the given specifier/NEMA size,
@@ -84,29 +82,30 @@ module stepper_motor(stp){
 
 	echo(str(v(stp, "product_name"), " ", v(stp, "size"), " stepper motor, ", 360 / v(stp, "steps_per_rev"), "-degree step angle"));
 	
-	color([255, 143, 0] / 255)
-		render(convexity = 10){
-			difference(){
-		
-				// body
-				scale([1, 1, -1])
-					linear_extrude(height = v(stp, "body_l"))
-						chamfer(v(stp, "w") / 12) square(v(stp, "w"), center = true);
-		
-				// mounting holes		
-				stepper_screw_placement(stp)
-					translate(z(-v(stp, "screw_depth")))
-						cylinder(d = v(stp, "screw.thread_d"), h = v(stp, "screw_depth") + 1);			
-			}
+	render(convexity = 10){
+		difference(){
 	
-			// lip
-			cylinder(h = v(stp, "boss_h"), d = v(stp, "boss_d"));
+			// body
+			scale([1, 1, -1])
+				linear_extrude(height = v(stp, "body_l"))
+					chamfer(v(stp, "w") / 12) square(v(stp, "w"), center = true);
 	
-			// shaft
-			chamfer_extrude(h = v(stp, "shaft_l"), e=0.5) circle(d = v(stp, "shaft_d"));
+			// mounting holes		
+			stepper_screw_placement(stp)
+				translate(z(-v(stp, "screw_depth")))
+					cylinder(d = v(stp, "screw.thread_d"), h = v(stp, "screw_depth") + 1);			
 		}
+
+		// lip
+		cylinder(h = v(stp, "boss_h"), d = v(stp, "boss_d"));
+
+		// shaft
+		chamfer_extrude(h = v(stp, "shaft_l"), e=0.5) circle(d = v(stp, "shaft_d"));
+	}
 }
 
+// test code
 stepper_motor(StepperMotor());
+debug_struct(_stepper_library);
 
 

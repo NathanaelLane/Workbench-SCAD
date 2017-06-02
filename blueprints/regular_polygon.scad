@@ -62,7 +62,7 @@ module regular_polygon(r=0, d=2, ns=6, sl=0.01) {
 		}else{
 		
 			rotate(z(90))		
-				circle(r = corner_radius(r), $fa = a, $fs = sl);
+				circle(r = corner_radius(_r), $fa = a, $fs = sl);
 		}
 }
 
@@ -71,7 +71,7 @@ use <workbench/multitool.scad>
 grid_array(spacing = 30, max_per_line = 4){
 	regular_polygon(r = 10, ns = 3);
 	regular_polygon(r = 10, ns = 4);
-	regular_polygon(r = 10, ns = 5);
+	regular_polygon(d = 20, ns = 5);
 	regular_polygon(r = 10, ns = 300);
 	regular_polygon(r = 5, sl = 10);
 	regular_polygon(r = 5, sl = 9.99);
