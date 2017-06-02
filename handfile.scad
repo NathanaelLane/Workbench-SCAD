@@ -25,9 +25,10 @@
  * 
  * - e: [number] edge radius. Default is 1
  * - h: [number] extrude height. Default is 0 (2D shape)
- * - convexity: [integer] pass-through for linear_extrude() convexity parameter 
+ * - convexity: [integer] pass-through for linear_extrude() convexity parameter
+ * - center: [boolean] center the shape vertically if 3D 
  */
-module chamfer(e = 1, h = 0, convexity){ _edge(e, h, convexity, fillet = false) children(); }
+module chamfer(e = 1, h = 0, convexity, center){ _edge(e, h, convexity, fillet = false, center = center) children(); }
 
 /*
  * [2D], [3D] fillet a 2D shape if h=0, or an extruded 3D shape if h>0
@@ -35,8 +36,9 @@ module chamfer(e = 1, h = 0, convexity){ _edge(e, h, convexity, fillet = false) 
  * - e: [number] edge radius. Default is 1
  * - h: [number] extrude height. Default is 0 (2D shape)
  * - convexity: [integer] pass-through for linear_extrude() convexity parameter 
+ * - center: [boolean] center the shape vertically if 3D
  */
-module fillet(e = 1, h = 0, convexity){ _edge(e, h, convexity, fillet = true) children(); }
+module fillet(e = 1, h = 0, convexity, center){ _edge(e, h, convexity, fillet = true, center = center) children(); }
 
 
 /* 
@@ -48,20 +50,21 @@ module fillet(e = 1, h = 0, convexity){ _edge(e, h, convexity, fillet = true) ch
  * - convexity: [integer] pass-through for linear_extrude() convexity parameter
  * - top: [boolean] chamfer top of extrude. Default true
  * - bottom: [boolean] chamfer bottom of extrude. Default false
+ * - center: [boolean] center the shape vertically if 3D
  */
-module chamfer_extrude(e = 1, h = 10, convexity, top = true, bottom = true){
+module chamfer_extrude(e = 1, h = 10, convexity, top = true, bottom = true, center = false){
   
   start = bottom ? e : 0;
   finish = top ? h - e : h;
   
   hull(){
     
-    linear_extrude(height = h, convexity = convexity)
+    linear_extrude(height = h, convexity = convexity, center = center)
       offset(r = -e)
         children();
         
-    translate(z(start))
-      linear_extrude(height = finish - start, convexity = convexity)
+    translate(center ? vec(0) : z(start))
+      linear_extrude(height = finish - start, convexity = convexity, center = center)
         children();
   }
 }
@@ -97,7 +100,7 @@ module octahedron(r = 0){
 	polyhedron(points = p, faces = t, convexity = 2);
 }
 
-module _edge(e, h, convexity, fillet){
+module _edge(e, h, convexity, fillet, center){
 
   if(h == 0){
     
@@ -106,7 +109,6 @@ module _edge(e, h, convexity, fillet){
         children();
       
       if(fillet){
-        
         circle(r = e);
       }else{
         
@@ -118,7 +120,7 @@ module _edge(e, h, convexity, fillet){
   
     minkowski(){
       translate(z(e))
-        linear_extrude(h - (e*2), convexity = convexity)
+        linear_extrude(h - (e*2), convexity = convexity, center = center)
           offset(-e)
             children();
         
@@ -145,13 +147,15 @@ grid_array(spacing = 12, max_per_line = 4){
 
   chamfer_extrude() fillet() square(10);
   
+  chamfer_extrude(center = true) chamfer() square(10);
+  
   chamfer(h=10) square(10);
   
   fillet(h=10) square(10);
   
   fillet(h=10, e=2) circle(5);
   
-  chamfer(h=10, e=3) circle(5);
+  chamfer(h=10, e=3, center = true) circle(5);
   
   fillet(e = 4, h = 10) square(10);
   
