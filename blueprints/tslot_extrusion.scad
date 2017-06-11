@@ -16,17 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+include <workbench/blueprints/templates.scad>
 use <workbench/multitool.scad>
 use <workbench/partsbin.scad>
 use <workbench/blueprints/triangle.scad>
 use <workbench/handfile.scad>
+use <workbench/blueprints/fasteners.scad>
 
   
 _TSLOT = Collection(
-	Template("side_w, slot_w, lip_h, t_w, t_depth, corner_r, end_screw"),
+	TSLOT_PROFILE,
 	[
-		["t30", 30, 8, 2, 16.5, 9, 2, undef],
-		["t15", 15, 3.4, 1.1, 5.7, 4.7, 3, undef]
+		["t30", 30, 8, 2, 16.5, 9, 2, Thread("m8")],
+		["t15", 15, 3.4, 1.1, 5.7, 4.7, 3, Thread("m3")]
 	]);
 
 /*

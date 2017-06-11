@@ -1,5 +1,5 @@
 /*
- * WWorkbench OpenSCAD utility library
+ * Workbench OpenSCAD utility library
  * Copyright (C) 2017 NathanaelLane
  *
  * This program is free software: you can redistribute it and/or modify

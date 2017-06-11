@@ -15,36 +15,55 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+include <workbench/blueprints/templates.scad>
+
 use <workbench/partsbin.scad>
 use <workbench/multitool.scad>
 use <workbench/handfile.scad>
 use <workbench/blueprints/regular_polygon.scad>
 use <workbench/blueprints/triangle.scad>
   
-_THREAD = Collection(
-  Template("thread_d, pilot_d, pitch"),
+_thread_library = Collection(
+  THREAD,
   [
     ["m3", 3, 2.5, 0.5],
     ["m4", 4, 3.3, 0.7],
     ["m8", 8, 6.8, 1.25]
   ]);
 
+/* 
+ * [object] Return a thread-size object from the built-in library
+ * 
+ * - type: [string] the lookup key
+ */
+function Thread(type) = v(_thread_library, type);
+
 _screw_library = Collection(
-  Template("socket_type, head_type, socket_d, head_h, head_d"),
+  SCREW_HEAD,
   [
     ["m3", "hex", "cap", 2.5, 2.4, 5.5],
     ["m3", "hex", "set", 1.5],
     ["m4", "hex", "cap", 3, 4, 7],
     ["m8", "hex", "cap", 6, 8, 13],
     ["m8", "hex", "button", 5, 4.4, 14]
-  ], [], range(0, 2), _THREAD);
+  ], [], range(0, 2), _thread_library);
   
+/* 
+ * [object] Return a screw object from the built-in library
+ * 
+ * - type: [string] the screw type, e.g. philips cap head
+ * - length: [number] the desired length of the screw
+ */
 function Screw(type, length) = Obj(Template("l"), [length], [v(_screw_library, type)]);
 
+/*
+ * [3D] render a screw
+ * 
+ * - scr: [object] the screw object to render
+ */
 module screw(scr){
 	
-	module screw(){
+	module shaft(){
 	
 		scale([1, 1, -1])
 			cylinder(d = v(scr, "thread_d"), h = v(scr, "l"));
@@ -74,7 +93,7 @@ module screw(scr){
       cylinder(h = v(scr, "head_h") + 1, d = v(scr, "head_d") + 2);
     }
     
-    screw(); 
+    shaft(); 
 	}
 	
 	module button_head(){
@@ -99,14 +118,14 @@ module screw(scr){
         socket();
     }
     
-    screw();
+    shaft();
 	}
 	
 	module setscr(){
 	
 		difference(){
 	
-			screw();
+			shaft();
 
 			socket();
 		}
@@ -134,15 +153,25 @@ module screw(scr){
 
 
 _nut_library = Collection(
-  Template("type, h, flat_d"),
+  NUT,
   [
     ["m3", "hex", 2.4, 5.5],
     ["m8", "thin-hex", 4, 13],
     ["m4", "hex", 3.2, 7]
-  ], [], range(0, 1), _THREAD);
+  ], [], range(0, 1), _thread_library);
 
+/* 
+ * [object] Return a threaded-nut object from the built-in library
+ * 
+ * - type: [string] the lookup key
+ */
 function Nut(type) = v(_nut_library, type);
 
+/*
+ * [3D] render a threaded nut
+ * 
+ * - nut: [object] the nut object to render
+ */
 module nut(nut){
 
 	t = v(nut, "type");
@@ -190,7 +219,7 @@ module nut(nut){
 }
   
 _washer_library = Collection(
-  Template("type, h, od, id"),
+  WASHER,
   [
     ["m3", "flat", 0.5, 7, 3.2],
     ["m3", "internal-tooth-lock", 0.5, 6, 3.2],
@@ -198,10 +227,20 @@ _washer_library = Collection(
     ["m8", "internal-tooth-lock", 0.9, 15, 8.4],
     ["m4", "flat", 0.8, 9, 4.3],
     ["m4", "internal-tooth-lock", 0.6, 8, 4.3]
-  ], [], range(0, 1), _THREAD);
+  ], [], range(0, 1), _thread_library);
 
+/* 
+ * [object] Return a washer object from the built-in library
+ * 
+ * - type: [string] the lookup key
+ */
 function Washer(type) = v(_washer_library, type);
 
+/*
+ * [3D] render a washer
+ * 
+ * - wsh: [object] the washer object to render
+ */
 module washer(wsh){
 
 	t = v(wsh, "type");

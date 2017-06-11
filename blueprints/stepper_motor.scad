@@ -15,21 +15,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+ include <workbench/blueprints/templates.scad>
+ 
 use <workbench/handfile.scad>
 use <workbench/partsbin.scad>
 use <workbench/multitool.scad>
+use <workbench/blueprints/fasteners.scad>
 
 _stepper_types = Collection(
-	Template("size, screw_spacing, screw, screw_depth, w, shaft_d, boss_d, boss_h"),
+	STEPPER_TYPE,
 	[
-		["nema17", "NEMA 17", 31, undef, 4.5, 42.5, 5, 22, 2]
+		["nema17", "NEMA 17", 31, Thread("m3"), 4.5, 42.5, 5, 22, 2]
 	]);
-
-_STEPPER = Template("product_name, body_l, shaft_l, steps_per_rev, torque, coil_current");
 	
 _stepper_library = Collection(
-	Template("product_name, body_l, shaft_l, steps_per_rev, torque, coil_current"),
+	STEPPER,
 	[
 		["nema17", "default", 48, 22, 200, undef, undef]
 	], [], [1], _stepper_types);
@@ -40,7 +40,7 @@ _stepper_library = Collection(
  * 
  * - size: [string]
  */
-function StepperTemplate(size="nema17") = Obj(_STEPPER, [], [v(_stepper_types, size)]);
+function StepperTemplate(size="nema17") = Obj(STEPPER, [], [v(_stepper_types, size)]);
 
 /*
  * [string] return the Stepper object corresponding to the given product name/identifier
@@ -105,6 +105,8 @@ module stepper_motor(stp){
 }
 
 // test code
+$fs = 0.05;
+$fa = 5;
 stepper_motor(StepperMotor());
 debug_struct(_stepper_library);
 
