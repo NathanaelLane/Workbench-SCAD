@@ -22,33 +22,33 @@
  * when 3D-printing round holes in a vertical orientation.
  * 
  * - r: [number] circle radius (default: 1)
- * - d: [number] circlee diameter (default: undefined)
+ * - d: [number] circle diameter (default: undefined)
  * - point: [boolean] if true, the top of the circle tapers to a point 
  *     (the reprap "teardrop" shape) instead of a horizontal overhang. Use this option for
  *     large holes where the overhang gap would be too wide for your printer to bridge.
  * 
  */
-module vertical_hole(r = 1, d = 0, point = false){
+module vertical_hole(r = 1, d = 0, point = false) {
 	
 	_r = (d == 0) ? r : d / 2;
 	
-	difference(){
+	difference() {
 
-		union(){
+		union() {
 			//hole
 			circle(r = _r);
 			//teardrop
-			translate(y(sqrt(2) * _r / 2)){
+			translate(y(sqrt(2) * _r / 2)) {
 
-				rotate(z(45)){
+				rotate(z(45)) {
 
 					square(_r, center = true);
 				}
 			}
 		}
-		if(!point){
+		if(!point) {
 	
-			translate(y(_r * 2)){
+			translate(y(_r * 2)) {
 	
 				square(2 * _r, center = true);
 			}

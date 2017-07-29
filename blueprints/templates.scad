@@ -30,3 +30,9 @@ THREAD = Template("thread_d, pilot_d, pitch");
 SCREW_HEAD = Template("socket_type, head_type, socket_d, head_h, head_d");
 NUT = Template("type, h, flat_d");
 WASHER = Template("type, h, od, id");
+
+
+// bearings
+RADIAL_BEARING = Template("code, id, od, w, flange_d, flange_l");
+LINEAR_BEARING = Template("code, id, od, l, retainer_groove_w, retainer_groove_depth, retainer_groove_spacing");
+

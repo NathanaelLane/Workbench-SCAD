@@ -26,7 +26,7 @@
  * - s: [number] length of sides
  * - a: [number] apex angle
  */
-module triangle(b = 0, h = 0, s = 0, a = 0, base_origin = false){
+module triangle(b = 0, h = 0, s = 0, a = 0, base_origin = false) {
 	
 	ahBase = tan(a / 2) * h * 2;
 	asBase = sin(a / 2) * s * 2;
@@ -56,7 +56,7 @@ $fs = 0.05;
 
 use <workbench/multitool.scad>
 
-grid_array(){
+grid_array() {
 	triangle(b = 10, a = 60, base_origin = true);
 	triangle(b=10, h=10);
 	triangle(a=60, h = 10);

@@ -45,18 +45,18 @@ function TSlotExtrusion(size, length) = Obj(Template("l"), [length], [v(_TSLOT, 
  * 
  * - tsl: [object] the desired extrusion to render
  */
-module tslot_extrusion(tsl){
+module tslot_extrusion(tsl) {
 	
-	module tslot_profile(p){
+	module tslot_profile(p) {
 	
-		difference(){
+		difference() {
 			
 			// basic profile 
 			fillet(r = v(p, "corner_r")) square(v(p, "side_w"), center = true);
 
 			// t-slot cutouts		
 			for(a = [0:90:270])
-				rotate([0, 0, a]){
+				rotate([0, 0, a]) {
 
 					slot_offset = v(p, "side_w") / 2 - v(p, "t_depth");
 					angle_offset = (v(p, "t_w") - v(p, "slot_w") * 1.1) / 2;
@@ -65,7 +65,7 @@ module tslot_extrusion(tsl){
 						square([v(p, "slot_w"), v(p, "t_depth")]);
 			
 					translate([0, v(p, "side_w") / 2 - v(p, "t_depth"), 0])	
-						intersection(){
+						intersection() {
 				
 							translate([0, v(p, "slot_w") * -0.55, 0])
 								rotate([0, 0, 180])
@@ -83,17 +83,16 @@ module tslot_extrusion(tsl){
 	
 	echo(str(v(tsl, "side_w"), "x", v(tsl, "side_w"), " T-slot aluminum extrusion"));
 	
-	render(convexity = 10)
-		if(v(tsl, "l") != undef){
-			linear_extrude(height = v(tsl, "l"), convexity = 10)
-				tslot_profile(tsl);
-		}else{
-				tslot_profile(tsl);
-		}
+	if(v(tsl, "l") != undef) {
+		linear_extrude(height = v(tsl, "l"), convexity = 10)
+			tslot_profile(tsl);
+	} else {
+			tslot_profile(tsl);
+	}
 }
 
 // test code
-grid_array(){
+grid_array() {
   tslot_extrusion(TSlotExtrusion("t15", 200));
   tslot_extrusion(TSlotExtrusion("t30"));
 }

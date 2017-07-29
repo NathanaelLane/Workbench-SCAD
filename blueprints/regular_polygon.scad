@@ -48,18 +48,18 @@ module regular_polygon(r=0, d=2, ns=6, sl=0.01) {
 		_r = (r == 0) ? d / 2 : r;
 		a = fa(ns, _r);
 		
-		if(a > 72){
+		if(a > 72) {
 	
-			if(a > 90){
+			if(a > 90) {
 			
 				translate(y(_r * 2))	
 					triangle(a = 60, h = _r * 3);
-			}else{
+			} else {
 			
 				rotate(z(45))
 						square(_r * 2, center = true);
 			}
-		}else{
+		} else {
 		
 			rotate(z(90))		
 				circle(r = corner_radius(_r), $fa = a, $fs = sl);
@@ -68,7 +68,7 @@ module regular_polygon(r=0, d=2, ns=6, sl=0.01) {
 
 // test code
 use <workbench/multitool.scad>
-grid_array(spacing = 30, max_per_line = 4){
+grid_array(spacing = 30, max_per_line = 4) {
 	regular_polygon(r = 10, ns = 3);
 	regular_polygon(r = 10, ns = 4);
 	regular_polygon(d = 20, ns = 5);

@@ -61,27 +61,27 @@ function Screw(type, length) = Obj(Template("l"), [length], [v(_screw_library, t
  * 
  * - scr: [object] the screw object to render
  */
-module screw(scr){
+module screw(scr) {
 	
-	module shaft(){
+	module shaft() {
 	
 		scale([1, 1, -1])
 			cylinder(d = v(scr, "thread_d"), h = v(scr, "l"));
 	}
 	
-	module socket(){
+	module socket() {
     t = v(scr, "socket_type");
-		if(t == "hex"){
+		if(t == "hex") {
       linear_extrude(height = max(v(scr, "socket_d"), 2), center = true)
         regular_polygon(ns = 6, d = v(scr, "socket_d"));
     }
 	}
 	
-	module cap_head(){
+	module cap_head() {
 	
-    intersection(){
+    intersection() {
       
-      difference(){
+      difference() {
       
         fillet(e = v(scr, "head_d") * 0.1, h = v(scr, "head_h") * 2, center = true) 
           circle(d = v(scr, "head_d"), h = v(scr, "head_h") * 2, center = true);
@@ -96,11 +96,11 @@ module screw(scr){
     shaft(); 
 	}
 	
-	module button_head(){
+	module button_head() {
 	
-    difference(){
+    difference() {
 
-      intersection(){
+      intersection() {
 
         rh = v(scr, "head_d") / 2;
         rt = v(scr, "thread_d") / 2;
@@ -121,9 +121,9 @@ module screw(scr){
     shaft();
 	}
 	
-	module setscr(){
+	module setscr() {
 	
-		difference(){
+		difference() {
 	
 			shaft();
 
@@ -135,20 +135,19 @@ module screw(scr){
   
   echo(str("m", v(scr, "thread_d"), "x", v(scr, "l"), "mm ", v(scr, "socket_type"), " ", type, " screw"));
 	
-  render(convexity = 10)
-    if(type == "cap"){
-      cap_head();
-    }else{
-      
-      if(type == "button"){
-  
-        button_head();
-      }else{
-  
-        if(type == "set")
-          setscr();
-      }
+  if(type == "cap") {
+    cap_head();
+  } else {
+    
+    if(type == "button") {
+
+      button_head();
+    } else {
+
+      if(type == "set")
+        setscr();
     }
+  }
 }
 
 
@@ -172,15 +171,15 @@ function Nut(type) = v(_nut_library, type);
  * 
  * - nut: [object] the nut object to render
  */
-module nut(nut){
+module nut(nut) {
 
 	t = v(nut, "type");
 	echo(str("m", v(nut, "thread_d"), " ", t, " nut"));
 	
-	module hex_nut(){
+	module hex_nut() {
 	
 		linear_extrude(height = v(nut, "h"))
-			difference(){
+			difference() {
 
 				regular_polygon(ns = 6, d = v(nut, "flat_d"));
 
@@ -188,11 +187,11 @@ module nut(nut){
 			}
 	}
 	
-	module lock_nut(){
+	module lock_nut() {
 	
-		difference(){
+		difference() {
 
-			union(){
+			union() {
 
 				collar = v(nut, "thread_d") / 4;
 
@@ -207,15 +206,14 @@ module nut(nut){
 		}
 	}
 	
-  render(convexity = 10)
-    if(t == "hex" || t == "thin-hex"){
-    
-      hex_nut();
-    }else{
+  if(t == "hex" || t == "thin-hex") {
+  
+    hex_nut();
+  } else {
 
-      if(t == "nylock")
-        lock_nut();
-    }
+    if(t == "nylock")
+      lock_nut();
+  }
 }
   
 _washer_library = Collection(
@@ -241,15 +239,15 @@ function Washer(type) = v(_washer_library, type);
  * 
  * - wsh: [object] the washer object to render
  */
-module washer(wsh){
+module washer(wsh) {
 
 	t = v(wsh, "type");
 	echo(str("m", v(wsh, "thread_d"), " ", t, " washer"));
 
-	module flat_washer(){
+	module flat_washer() {
 
 		linear_extrude(height = v(wsh, "h"))
-			difference(){
+			difference() {
 		
 				circle(d = v(wsh, "od"));
 		
@@ -259,12 +257,12 @@ module washer(wsh){
 			}
 	}
 	
-	module tooth_lock_washer(){
+	module tooth_lock_washer() {
 	
 		flat_washer(wsh)
 			for(x = [0:7])
 				rotate(z(x * 360 / 8))
-					intersection(){
+					intersection() {
 
 						r = (v(wsh, "od") + v(wsh, "id")) / 4;
 						triangle(a = 360 / 30, h = r);
@@ -273,21 +271,20 @@ module washer(wsh){
 					}
 	}
 	
-  render(convexity = 10)
-    if(t == "flat"){
+  if(t == "flat") {
 
-      flat_washer();
-    }else{
+    flat_washer();
+  } else {
 
-      if(t == "internal-tooth-lock")
-        tooth_lock_washer();		
-    }
+    if(t == "internal-tooth-lock")
+      tooth_lock_washer();		
+  }
 }
 // test code
 
 $fs = 0.05;
 $fa = 5;
-grid_array(spacing = 20, max_per_line = 5){
+grid_array(spacing = 20, max_per_line = 5) {
   screw(Screw("m8_hex_button", 20));
   screw(Screw("m3_hex_set", 10));
   screw(Screw("m4_hex_cap", 15));

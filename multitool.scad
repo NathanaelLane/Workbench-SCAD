@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 // Multitool: - the first thing you reach for to get the job done
+
 
 /* 
  * [array[number]] return an array representing an ordered progression of numbers-- 
@@ -140,7 +140,7 @@ function z(arg = 1) = len(arg) == undef ? [0, 0, arg] : arg[2];
  * 
  * - dim: [array] default is [1, 0, 0]
  */
-module stretch(dim = x(10)){
+module stretch(dim = x(10)) {
 
 	hull()
 		for(t = [vec(0), vec(dim)])
@@ -156,7 +156,7 @@ module stretch(dim = x(10)){
  * - spacing: [number] distance between objects when placing child elements.
  *     Default is 50
  */
-module grid_array(max_per_line = 10, spacing = 50){
+module grid_array(max_per_line = 10, spacing = 50) {
 
 	for(n = [0:$children - 1])
 		translate([(n % max_per_line) * spacing, floor(n / max_per_line) * spacing, 0])
@@ -210,7 +210,7 @@ echo(x(v));
 echo(y(v));
 echo(z(v));
 
-grid_array(max_per_line = 3, spacing = 10){
+grid_array(max_per_line = 3, spacing = 10) {
 	stretch() circle();
 	stretch([3, 1.5, 7]) cylinder(h = 10);
 	circle();

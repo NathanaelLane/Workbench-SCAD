@@ -28,7 +28,7 @@
  * - convexity: [integer] pass-through for linear_extrude() convexity parameter
  * - center: [boolean] center the shape vertically if 3D 
  */
-module chamfer(e = 1, h = 0, convexity, center){ _edge(e, h, convexity, fillet = false, center = center) children(); }
+module chamfer(e = 1, h = 0, convexity, center) { _edge(e, h, convexity, fillet = false, center = center) children(); }
 
 /*
  * [2D], [3D] fillet a 2D shape if h=0, or an extruded 3D shape if h>0
@@ -38,7 +38,7 @@ module chamfer(e = 1, h = 0, convexity, center){ _edge(e, h, convexity, fillet =
  * - convexity: [integer] pass-through for linear_extrude() convexity parameter 
  * - center: [boolean] center the shape vertically if 3D
  */
-module fillet(e = 1, h = 0, convexity, center){ _edge(e, h, convexity, fillet = true, center = center) children(); }
+module fillet(e = 1, h = 0, convexity, center) { _edge(e, h, convexity, fillet = true, center = center) children(); }
 
 
 /* 
@@ -52,12 +52,12 @@ module fillet(e = 1, h = 0, convexity, center){ _edge(e, h, convexity, fillet = 
  * - bottom: [boolean] chamfer bottom of extrude. Default false
  * - center: [boolean] center the shape vertically if 3D
  */
-module chamfer_extrude(e = 1, h = 10, convexity, top = true, bottom = true, center = false){
+module chamfer_extrude(e = 1, h = 10, convexity, top = true, bottom = true, center = false) {
   
   start = bottom ? e : 0;
   finish = top ? h - e : h;
   
-  hull(){
+  hull() {
     
     linear_extrude(height = h, convexity = convexity, center = center)
       offset(r = -e)
@@ -74,7 +74,7 @@ module chamfer_extrude(e = 1, h = 10, convexity, top = true, bottom = true, cent
  * 
  * - r: [number] radius
  */
-module octahedron(r = 0){
+module octahedron(r = 0) {
 
 	p = [
 		[0, 0, r],
@@ -100,34 +100,36 @@ module octahedron(r = 0){
 	polyhedron(points = p, faces = t, convexity = 2);
 }
 
-module _edge(e, h, convexity, fillet, center){
+module _edge(e, h, convexity, fillet, center) {
 
-  if(h == 0){
+  if(h == 0) {
     
-    minkowski(){
+    minkowski() {
       offset(-e)
         children();
       
-      if(fillet){
+      if(fillet) {
+	
         circle(r = e);
-      }else{
+      } else {
         
         rotate([0, 0, 45])
           square(e * sqrt(2), center = true);
       }
     }
-  }else{
+  } else {
   
-    minkowski(){
+    minkowski() {
+      
       translate(z(e))
         linear_extrude(h - (e*2), convexity = convexity, center = center)
           offset(-e)
             children();
         
-      if(fillet){
+      if(fillet) {
         
         sphere(r = e);
-      }else{
+      } else {
       
         octahedron(r = e);
       }
@@ -141,7 +143,7 @@ $fs = 0.05;
 
 use <workbench/multitool.scad>
 
-grid_array(spacing = 12, max_per_line = 4){
+grid_array(spacing = 12, max_per_line = 4) {
   
   square(10);
 

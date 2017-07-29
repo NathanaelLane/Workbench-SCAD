@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 // Partsbin: - keep your data organized
+
 
 use <workbench/multitool.scad>
 
@@ -131,8 +131,8 @@ module debug_struct(structure, _indent = "") {
  * - data: [array[array]] an array of arrays containing a key followed by template-matched data fields
  * - common_protos: [array[object]] prototype chain to be used by all child objects
  * - key_slice: [array[integer]] a range of indices in the inner data arrays whose values should be used
- *     in combination as each object's access key in the collection. Chosen values are joined using the "_"
- *     character to form the key.
+ *     in combination as each object's access key in the collection. Chosen values are joined using underscores
+ *     to form the key. Default index is 0.
  * - proto_LUT: [object] an Object to be used as a lookup, keyed by the first value in each inner data array,
  *     for creating child-specific prototype chains
  */			

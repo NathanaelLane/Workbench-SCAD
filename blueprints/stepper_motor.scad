@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- include <workbench/blueprints/templates.scad>
+include <workbench/blueprints/templates.scad>
  
 use <workbench/handfile.scad>
 use <workbench/partsbin.scad>
@@ -35,15 +35,15 @@ _stepper_library = Collection(
 	], [], [1], _stepper_types);
 
 /*
- * [string] return the empty Stepper base object corresponding to the given specifier/NEMA size,
+ * [object] return the empty StepperType base object corresponding to the given specifier/NEMA size,
  * for creating custom StepperMotor objects
  * 
  * - size: [string]
  */
-function StepperTemplate(size="nema17") = Obj(STEPPER, [], [v(_stepper_types, size)]);
+function StepperTemplate(size="nema17") = v(_stepper_types, size);
 
 /*
- * [string] return the Stepper object corresponding to the given product name/identifier
+ * [object] return the Stepper object corresponding to the given product name/identifier
  * 
  * - name: [string]
  */
@@ -56,18 +56,18 @@ function StepperMotor(name="default") = v(_stepper_library, name);
  * - stretch: [boolean] if true, radially elongate child modules. Default is false
  *     Useful for creating self-centering stepper mounting holes.
  */
-module stepper_screw_placement(stp, stretch = false){
+module stepper_screw_placement(stp, stretch = false) {
 
 	for(x = [-1, 1])
 		for(y = [-1, 1])
 			translate([x, y] * v(stp, "screw_spacing") / 2)
-				if(stretch){
+				if(stretch) {
 				
 					hull()
 						for(delta = [-1, 1])
 						 	translate([x, y] * delta * 0.25 * sqrt(2))
 								children();
-				}else{
+				} else {
 			
 					children();
 				}
@@ -78,30 +78,28 @@ module stepper_screw_placement(stp, stretch = false){
  * 
  * - stp: [object] the stepper to render
  */
-module stepper_motor(stp){
+module stepper_motor(stp) {
 
 	echo(str(v(stp, "product_name"), " ", v(stp, "size"), " stepper motor, ", 360 / v(stp, "steps_per_rev"), "-degree step angle"));
-	
-	render(convexity = 10){
-		difference(){
-	
-			// body
-			scale([1, 1, -1])
-				linear_extrude(height = v(stp, "body_l"))
-					chamfer(v(stp, "w") / 12) square(v(stp, "w"), center = true);
-	
-			// mounting holes		
-			stepper_screw_placement(stp)
-				translate(z(-v(stp, "screw_depth")))
-					cylinder(d = v(stp, "screw.thread_d"), h = v(stp, "screw_depth") + 1);			
-		}
 
-		// lip
-		cylinder(h = v(stp, "boss_h"), d = v(stp, "boss_d"));
+	difference() {
 
-		// shaft
-		chamfer_extrude(h = v(stp, "shaft_l"), e=0.5) circle(d = v(stp, "shaft_d"));
+		// body
+		scale([1, 1, -1])
+			linear_extrude(height = v(stp, "body_l"))
+				chamfer(v(stp, "w") / 12) square(v(stp, "w"), center = true);
+
+		// mounting holes		
+		stepper_screw_placement(stp)
+			translate(z(-v(stp, "screw_depth")))
+				cylinder(d = v(stp, "screw.thread_d"), h = v(stp, "screw_depth") + 1);			
 	}
+
+	// lip
+	cylinder(h = v(stp, "boss_h"), d = v(stp, "boss_d"));
+
+	// shaft
+	chamfer_extrude(h = v(stp, "shaft_l"), e=0.5) circle(d = v(stp, "shaft_d"));
 }
 
 // test code
