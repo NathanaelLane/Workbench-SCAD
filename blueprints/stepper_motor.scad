@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-include <workbench/blueprints/templates.scad>
+include <workbench/blueprints/blueprints.scad>
  
 use <workbench/handfile.scad>
 use <workbench/partsbin.scad>
@@ -80,7 +80,7 @@ module stepper_screw_placement(stp, stretch = false) {
  */
 module stepper_motor(stp) {
 
-	echo(str(v(stp, "product_name"), " ", v(stp, "size"), " stepper motor, ", 360 / v(stp, "steps_per_rev"), "-degree step angle"));
+	echo(str(RENDER_BLUEPRINT_PREFIX, v(stp, "product_name"), " ", v(stp, "size"), " stepper motor, ", 360 / v(stp, "steps_per_rev"), "-degree step angle"));
 
 	difference() {
 

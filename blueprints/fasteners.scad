@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-include <workbench/blueprints/templates.scad>
+include <workbench/blueprints/blueprints.scad>
 
 use <workbench/partsbin.scad>
 use <workbench/multitool.scad>
 use <workbench/handfile.scad>
-use <workbench/blueprints/regular_polygon.scad>
-use <workbench/blueprints/triangle.scad>
+use <workbench/geometry/regular_polygon.scad>
+use <workbench/geometry/triangle.scad>
   
 _thread_library = Collection(
   THREAD,
@@ -133,20 +133,17 @@ module screw(scr) {
   
   type = v(scr, "head_type");
   
-  echo(str("m", v(scr, "thread_d"), "x", v(scr, "l"), "mm ", v(scr, "socket_type"), " ", type, " screw"));
+  echo(str(RENDER_BLUEPRINT_PREFIX, "m", v(scr, "thread_d"), "x", v(scr, "l"), "mm ", v(scr, "socket_type"), " ", type, " screw"));
 	
   if(type == "cap") {
-    cap_head();
-  } else {
     
-    if(type == "button") {
+    cap_head();
+  } else if(type == "button") {
 
-      button_head();
-    } else {
-
-      if(type == "set")
-        setscr();
-    }
+    button_head();
+  } else if(type == "set") {
+        
+    setscr();
   }
 }
 
@@ -174,7 +171,7 @@ function Nut(type) = v(_nut_library, type);
 module nut(nut) {
 
 	t = v(nut, "type");
-	echo(str("m", v(nut, "thread_d"), " ", t, " nut"));
+	echo(str(RENDER_BLUEPRINT_PREFIX, "m", v(nut, "thread_d"), " ", t, " nut"));
 	
 	module hex_nut() {
 	
@@ -209,10 +206,9 @@ module nut(nut) {
   if(t == "hex" || t == "thin-hex") {
   
     hex_nut();
-  } else {
+  } else if(t == "nylock") {
 
-    if(t == "nylock")
-      lock_nut();
+    lock_nut();
   }
 }
   
@@ -242,7 +238,7 @@ function Washer(type) = v(_washer_library, type);
 module washer(wsh) {
 
 	t = v(wsh, "type");
-	echo(str("m", v(wsh, "thread_d"), " ", t, " washer"));
+	echo(str(RENDER_BLUEPRINT_PREFIX, "m", v(wsh, "thread_d"), " ", t, " washer"));
 
 	module flat_washer() {
 
@@ -274,10 +270,9 @@ module washer(wsh) {
   if(t == "flat") {
 
     flat_washer();
-  } else {
-
-    if(t == "internal-tooth-lock")
-      tooth_lock_washer();		
+  } else if(t == "internal-tooth-lock") {
+    
+    tooth_lock_washer();		
   }
 }
 // test code
@@ -293,4 +288,3 @@ grid_array(spacing = 20, max_per_line = 5) {
   washer(Washer("m3_flat"));
 
 }
-

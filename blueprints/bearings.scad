@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-include <workbench/blueprints/templates.scad>
+include <workbench/blueprints/blueprints.scad>
 
 use <workbench/partsbin.scad>
 use <workbench/multitool.scad>
@@ -43,7 +43,7 @@ function RadialBearing(code) = v(_radial_bearing_library, code);
 module radial_bearing(rbr, center = false) {
   e = min(0.5, v(rbr, "w") / 10);
   
-  echo(str(v(rbr, "code"), " radial ball bearing"));
+  echo(str(RENDER_BLUEPRINT_PREFIX, v(rbr, "code"), " radial ball bearing"));
   
   translate(center ? z(0) : z(v(rbr, "w") / 2))
     difference() {
@@ -95,7 +95,7 @@ function LinearBearing(code) = v(_linear_bearing_library, code);
  */
 module linear_bearing(lbr, center = false) {
 
-  echo(str(v(lbr, "code"), " linear ball bearing"));
+  echo(str(RENDER_BLUEPRINT_PREFIX, v(lbr, "code"), " linear ball bearing"));
   
   e = 0.4;
   

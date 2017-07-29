@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+RENDER_BLUEPRINT_PREFIX = "[rendering model] ";
+
 // stepper motors
 STEPPER = Template("product_name, body_l, shaft_l, steps_per_rev, torque, coil_current");
 STEPPER_TYPE = Template("size, screw_spacing, screw, screw_depth, w, shaft_d, boss_d, boss_h");
@@ -36,3 +38,7 @@ WASHER = Template("type, h, od, id");
 RADIAL_BEARING = Template("code, id, od, w, flange_d, flange_l");
 LINEAR_BEARING = Template("code, id, od, l, retainer_groove_w, retainer_groove_depth, retainer_groove_spacing");
 
+/*
+ * [string] return the string prefix for the "echo" statement issued when rendering an object from within the Blueprint library
+ */
+function getRenderObjectPrefix() = RENDER_BLUEPRINT_PREFIX;

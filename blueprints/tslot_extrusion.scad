@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include <workbench/blueprints/templates.scad>
+include <workbench/blueprints/blueprints.scad>
 use <workbench/multitool.scad>
 use <workbench/partsbin.scad>
-use <workbench/blueprints/triangle.scad>
+use <workbench/geometry/triangle.scad>
 use <workbench/handfile.scad>
 use <workbench/blueprints/fasteners.scad>
 
@@ -62,7 +62,7 @@ module tslot_extrusion(tsl) {
 					angle_offset = (v(p, "t_w") - v(p, "slot_w") * 1.1) / 2;
 			
 					translate([v(p, "slot_w") / -2, slot_offset, 0])	
-						square([v(p, "slot_w"), v(p, "t_depth")]);
+						square([v(p, "slot_w"), v(p, "t_depth") +1]);
 			
 					translate([0, v(p, "side_w") / 2 - v(p, "t_depth"), 0])	
 						intersection() {
@@ -81,7 +81,7 @@ module tslot_extrusion(tsl) {
 			}
 	}
 	
-	echo(str(v(tsl, "side_w"), "x", v(tsl, "side_w"), " T-slot aluminum extrusion"));
+	echo(str(RENDER_BLUEPRINT_PREFIX, v(tsl, "side_w"), "x", v(tsl, "side_w"), " T-slot aluminum extrusion"));
 	
 	if(v(tsl, "l") != undef) {
 		linear_extrude(height = v(tsl, "l"), convexity = 10)
