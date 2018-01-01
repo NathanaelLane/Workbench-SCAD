@@ -96,26 +96,37 @@ function _strip(argv, char, lo_inc, hi_inc) =
  * - sep: [character] default is " "
  */
 function split(string, sep=" ") = 
-	let (cleanStr = stripL(string, sep))
-		len(cleanStr) == 0 || sep == "" ?
-			[ for (i=range(0, len(string)-1)) string[i] ]
-		:
-			let(sepIndex = search(sep, cleanStr, 1)[0])
-				sepIndex == undef ? 
-					[restring(cleanStr)]
-				:
-					concat(restring(slice(cleanStr, 0, sepIndex-1)), split(slice(cleanStr, sepIndex+1, len(cleanStr)-1), sep));
-
+	sep == "" ?
+		[ for (i=range(0, len(string)-1)) string[i] ]
+	:
+		let (indices = concat(-1, search(sep, string, 0)[0], len(string) + 1))
+			[ for (j = [ for (i = [1:len(indices)-1]) restring(slice(string, indices[i-1]+1, indices[i]-1)) ])
+					if (len(j) != 0) 
+						j ];
+			
 /* 
  * [array[array]] transpose a matrix
  * 
  * - mat: [array[array]]
  */
-function transpose(mat) = 
+function transpose(mat) =
 	[ for (i = [0:len(mat[0])-1]) 
 		[ for (j = [0:len(mat)-1]) 
 			mat[j][i] ] ];
 
+/*
+ * [number] sum the elements of a vector
+ * 
+ * - v: [array[number]]
+ */
+function sum(v, _i=0) = 
+	len(v) == 0 ?
+		v
+	: _i == len(v) - 1 ? 
+		v[_i]
+	: 
+		v[_i] + sum(v, _i + 1);
+	
 /* 
  * [array] create a vector of repeated elements
  * 
@@ -209,6 +220,8 @@ v = [1, 2, 3];
 echo(x(v));
 echo(y(v));
 echo(z(v));
+
+echo(sum(range(1, 4)));
 
 grid_array(max_per_line = 3, spacing = 10) {
 	stretch() circle();

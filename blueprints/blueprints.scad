@@ -38,7 +38,12 @@ WASHER = Template("type, h, od, id");
 RADIAL_BEARING = Template("code, id, od, w, flange_d, flange_l");
 LINEAR_BEARING = Template("code, id, od, l, retainer_groove_w, retainer_groove_depth, retainer_groove_spacing");
 
+// e-clip
+E_CLIP = Template("h, od, id");
+
 /*
- * [string] return the string prefix for the "echo" statement issued when rendering an object from within the Blueprint library
+ * [string] return the string prefix for the "echo" statement issued when rendering an object 
+ * from within the Blueprint library. Wrapping it in a function allows for modules to "use" blueprints.scad 
+ * instead of "include"-ing it.
  */
 function getRenderObjectPrefix() = RENDER_BLUEPRINT_PREFIX;

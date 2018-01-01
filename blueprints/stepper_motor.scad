@@ -31,7 +31,7 @@ _stepper_types = Collection(
 _stepper_library = Collection(
 	STEPPER,
 	[
-		["nema17", "default", 48, 22, 200, undef, undef]
+		["nema17", "std17", 48, 22, 200, undef, undef]
 	], [], [1], _stepper_types);
 
 /*
@@ -47,7 +47,7 @@ function StepperTemplate(size="nema17") = v(_stepper_types, size);
  * 
  * - name: [string]
  */
-function StepperMotor(name="default") = v(_stepper_library, name);
+function StepperMotor(name="std17") = v(_stepper_library, name);
 
 /*
  * [2D], [3D] positions child modules at stepper mounting screw locations relative to center

@@ -77,7 +77,8 @@ _linear_bearing_library = Collection(
   LINEAR_BEARING,
   [
     ["lme12uu", "LME12uu", 12, 22, 32, 1.3, 0.5, 22.9],
-    ["lm12uu", "LM12uu", 12, 21, 30, 1.3, 0.5, 23] 
+    ["lm12uu", "LM12uu", 12, 21, 30, 1.3, 0.5, 23],
+    ["lm12uw", "LM12uu-w", 12, 21, 57, 1.3, 0.5, 45.9]
   ]); 
  
 

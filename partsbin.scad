@@ -82,11 +82,8 @@ function _singleV(obj, key) =
 
 // access a named field directly owned by an object		
 function _localV(obj, key) = 
-	[ for (i=range(0, len(obj[2])-1)) 
-		if (obj[2][i] == key) 
-			obj[3][i] 
-	][0];
-
+	obj[3][search([key], obj[2])[0]];
+			
 // access a named field owned by any of an object's prototypes
 function _protoV(obj, key) = 
 	[ for (i=range(0, len(obj[1])-1)) 
@@ -141,6 +138,16 @@ function Collection(template, data, common_protos=[], key_slice = [0], proto_LUT
 		_Template([ for (d=data) restring([ for (i=key_slice) d[i] ], "_") ]),
 		[ for (d=data) Obj(template, slice(d, 1), proto_LUT==undef ? common_protos : concat(common_protos, [v(proto_LUT, d[0])])) ]);
 
+/*
+ * [object] Create an object out of an explicit collection of key-value pairs. Great for one-off data structures.
+ * 
+ * - kv: [array[[string, any]]] the collection of explicit key-value pairs
+ */ 
+function Map(kv) =
+	Obj(
+		_Template([ for (k=kv) k[0] ]),
+		[ for (v=kv) v[1] ]);
+		
 // test code
 
 threadT = Template("nominal_d, pilot_d, pitch");
@@ -159,7 +166,7 @@ debug_struct(Obj(m3_socket_cap, [1, 2, 3]));
 
 k = [["a", 1], ["b", 2]];
 debug_struct(Collection(Template("num"), k, [m3_scs]));
-
+debug_struct(Map([["key", "value"], ["a", 1], ["b", 2], ["c", 3]]));
 
 
 
