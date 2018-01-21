@@ -28,7 +28,8 @@ _thread_library = Collection(
   [
     ["m3", 3, 2.5, 0.5],
     ["m4", 4, 3.3, 0.7],
-    ["m8", 8, 6.8, 1.25]
+    ["m8", 8, 6.8, 1.25],
+    ["m2", 2, 1.6, 0.4]
   ]);
 
 /* 
@@ -44,8 +45,10 @@ _screw_library = Collection(
     ["m3", "hex", "cap", 2.5, 2.4, 5.5],
     ["m3", "hex", "set", 1.5],
     ["m4", "hex", "cap", 3, 4, 7],
+    ["m4", "hex", "button", 2.5, 2.2, 7.6],
     ["m8", "hex", "cap", 6, 8, 13],
-    ["m8", "hex", "button", 5, 4.4, 14]
+    ["m8", "hex", "button", 5, 4.4, 14],
+    ["m2", "hex", "cap", 1.5, 2, 3.8]
   ], [], range(0, 2), _thread_library);
   
 /* 
@@ -153,7 +156,9 @@ _nut_library = Collection(
   [
     ["m3", "hex", 2.4, 5.5],
     ["m8", "thin-hex", 4, 13],
-    ["m4", "hex", 3.2, 7]
+    ["m4", "hex", 3.2, 7],
+    ["m4", "square", 3.2, 7],
+    ["m2", "hex", 1.6, 4]
   ], [], range(0, 1), _thread_library);
 
 /* 
@@ -173,12 +178,12 @@ module nut(nut) {
 	t = v(nut, "type");
 	echo(str(RENDER_BLUEPRINT_PREFIX, "m", v(nut, "thread_d"), " ", t, " nut"));
 	
-	module hex_nut() {
+	module hex_nut(ns = 6) {
 	
 		linear_extrude(height = v(nut, "h"))
 			difference() {
 
-				regular_polygon(ns = 6, d = v(nut, "flat_d"));
+				regular_polygon(ns = ns, d = v(nut, "flat_d"));
 
 				circle(d = v(nut, "thread_d"));
 			}
@@ -209,6 +214,10 @@ module nut(nut) {
   } else if(t == "nylock") {
 
     lock_nut();
+  } else if(t == "square") {
+    
+    rotate(z(45))
+      hex_nut(ns = 4);
   }
 }
   
@@ -284,6 +293,7 @@ grid_array(spacing = 20, max_per_line = 5) {
   screw(Screw("m3_hex_set", 10));
   screw(Screw("m4_hex_cap", 15));
   nut(Nut("m3_hex"));
+  nut(Nut("m4_square"));
   washer(Washer("m8_internal-tooth-lock"));
   washer(Washer("m3_flat"));
 

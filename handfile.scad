@@ -138,12 +138,12 @@ module _edge(e, h, convexity, fillet, center) {
 }
 
 // test code
-$fa = 5;
-$fs = 0.05;
+//$fa = 6;
+//$fs = 0.1;
 
 use <workbench/multitool.scad>
 
-grid_array(spacing = 12, max_per_line = 4) {
+grid_array(spacing = 12, max_per_line = 4, $fa = 6, $fs = 0.1) {
   
   square(10);
 

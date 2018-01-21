@@ -28,6 +28,27 @@ use <workbench/geometry/triangle.scad>
 function corner_radius(r, ns=6) = r / cos(180/ns);
 
 /*
+ * [number] helper function to compute the facet length of a regular polygon with given tangent radius and # of sides
+ * 
+ * - r: [number] radius
+ * - ns: [integer] number of sides in regular polygon being queried
+ */
+function facet_length(r, ns) = r * tan(180/ns) * 2;
+		
+/*
+ * [number] helper function to compute the angle between facets in a regular polygon with the given tangent radius, number of sides, 
+ * and minimum side length
+ * 
+ * - ns: [integer] number of sides in regular polygon being queried
+ * - r: [number] radius
+ * - sl: [number] minimum side length
+ */
+function fa(ns, r, sl) = 
+	ns > 3 && facet_length(r, ns) < sl ?
+		fa(ns - 1, r, sl)
+	:
+		360 / ns;
+/*
  * [2D] arbitary regular polygons
  * 
  * - r: [number] radius (measured from center to flat, not center to corner)
@@ -35,18 +56,10 @@ function corner_radius(r, ns=6) = r / cos(180/ns);
  * - ns: [integer] desired number of sides
  * - sl: [number] desired minimum side length (OpenSCAD's built-in hard minimum is 0.01)
  */
-module regular_polygon(r=0, d=2, ns=6, sl=0.01) {
-	
-		function sideLength(r, ns) = r * tan(180/ns) * 2;
-		
-		function fa(ns, r) = 
-			ns > 3 && sideLength(r, ns) < sl ?
-				fa(ns - 1, r)
-			:
-				360 / ns;
+module regular_polygon(r=0, d=2, ns=6, sl = 0.01) {
 				
 		_r = (r == 0) ? d / 2 : r;
-		a = fa(ns, _r);
+		a = fa(ns, _r, sl);
 		
 		if(a > 72) {
 	

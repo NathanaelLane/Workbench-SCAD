@@ -76,9 +76,11 @@ module radial_bearing(rbr, center = false) {
 _linear_bearing_library = Collection(
   LINEAR_BEARING,
   [
-    ["lme12uu", "LME12uu", 12, 22, 32, 1.3, 0.5, 22.9],
-    ["lm12uu", "LM12uu", 12, 21, 30, 1.3, 0.5, 23],
-    ["lm12uw", "LM12uu-w", 12, 21, 57, 1.3, 0.5, 45.9]
+    ["lme12uu", "LME12uu",  12,   22,   32,   1.3,  0.5,   22.9],
+    ["lm12uu",  "LM12uu",   12,   21,   30,   1.3,  0.5,   23],
+    ["lm12uw",  "LM12uu-w", 12,   21,   57,   1.3,  0.5,   45.9],
+    ["lm8uu",   "LM8uu",    8,    15,   24,   1.1,  0.35,  17.5],
+    ["lm8uw",   "LM8uu-w",  8,    15,   45,   1.1,  0.35,  34.9]
   ]); 
  
 

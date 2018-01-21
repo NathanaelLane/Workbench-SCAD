@@ -126,7 +126,28 @@ function sum(v, _i=0) =
 		v[_i]
 	: 
 		v[_i] + sum(v, _i + 1);
-	
+
+
+// helper functions for hole_d
+function _num_facets(d) = max(min(ceil(180 / asin($fs / d)), 360 / $fa), 5);
+
+function _hole_d(d, facets) = 
+  let (
+    correction = d / cos(180 / facets),
+    corrected_facets = _num_facets(correction))
+  corrected_facets == facets ? 
+    correction
+  :
+    _hole_d(d, corrected_facets);
+
+/*
+ * [number] return the value such that a circle with the given diameter will fit inside the faceted openscad representation, 
+ * rather than the openscad representation being bounded in radius by said circle
+ * 
+ * - d: [number] the desired hole diameter
+ */
+function hole_d(d) = _hole_d(d, _num_facets(d));
+
 /* 
  * [array] create a vector of repeated elements
  * 
@@ -140,11 +161,11 @@ function vec(x, n = 3) = len(x) == undef ? [ for([1:n]) x ] : x;
  * or the component of a specified vector along given axis
  * 
  * - arg: [number] returns [array] of length <arg> parallel to given axis. Default is 1
- * - arg: [array] returns [number] of component along given axis
+ * - arg: [array] returns [array] with all components zeroed out except for the one along the given axis
  */
-function x(arg = 1) = len(arg) == undef ? [arg, 0, 0] : arg[0];
-function y(arg = 1) = len(arg) == undef ? [0, arg, 0] : arg[1];
-function z(arg = 1) = len(arg) == undef ? [0, 0, arg] : arg[2];
+function x(arg = 1) = len(arg) == undef ? [arg, 0, 0] : [arg[0], 0, 0];
+function y(arg = 1) = len(arg) == undef ? [0, arg, 0] : [0, arg[1], 0];
+function z(arg = 1) = len(arg) == undef ? [0, 0, arg] : [0, 0, arg[2]];
 
 /* 
  * [2D], [3D] extrude geometry along a given vector
@@ -174,9 +195,28 @@ module grid_array(max_per_line = 10, spacing = 50) {
 			children(n);
 }
 
+/* 
+ * [2D], [3D] perform the given transform or its inverse
+ * 
+ * - arg: [array[array]] the rotation and translation vectors to perform on child objects (in that order)
+ */
+module transform(arg = [vec(0), vec(0)]) {
+	
+	translate(arg[1])
+		rotate(arg[0])
+			children();
+}
+module inv_transform(arg = [vec(0), vec(0)]) {
+	
+	r = -arg[0];
+	rotate(x(r))
+		rotate(y(r))
+			rotate(z(r))
+				translate(-arg[1])
+					children();
+}					
+
 // test code
-$fs = 0.05;
-$fa = 5;
 
 echo(range(10, 1));
 echo(range(10, 1, -2.5));
@@ -223,13 +263,23 @@ echo(z(v));
 
 echo(sum(range(1, 4)));
 
-grid_array(max_per_line = 3, spacing = 10) {
+grid_array(max_per_line = 3, spacing = 10, $fs = 0.1, $fa = 8) {
 	stretch() circle();
 	stretch([3, 1.5, 7]) cylinder(h = 10);
 	circle();
 	square();
 	cube(5);
-	cylinder(h=10, r = 4);
+	cylinder(h=10, r = 4);	
+	union() {
+		circle(d = 5, $fs = 1.5, $fa = 12);
+		#circle(d = hole_d(5));
+	}
+	t = [z(45), z(10)];
+	transform(t)
+		inv_transform(t)
+				cube(4, center = true);
+	transform(t)
+		cube(4, center = true);
 }
 
 
