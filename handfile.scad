@@ -21,25 +21,51 @@
 
 /*
  * [2D], [3D] chamfer a 2D shape if h=0, or an extruded 3D shape if h>0.
- * This has the effect of "flattening" out rounded edges
+ * This has the effect of "flattening" out rounded edges. If no children are given,
+ * the module will produce a 2D shape if h=0, or an extruded shape if h>0, that can 
+ * be used subtractively to chamfer a single corner.
  * 
  * - e: [number] edge radius. Default is 1
  * - h: [number] extrude height. Default is 0 (2D shape)
  * - convexity: [integer] pass-through for linear_extrude() convexity parameter
  * - center: [boolean] center the shape vertically if 3D 
  */
-module chamfer(e = 1, h = 0, convexity, center) { _edge(e, h, convexity, fillet = false, center = center) children(); }
+module chamfer(e = 1, h = 0, convexity, center) { 
+  if($children != 0) {
+    _edge(e, h, convexity, fillet = false, center = center) children(); 
+  } else {
+    _single_edge(h, center)
+      rotate([0, 0, 45])
+        square(e * sqrt(2), center = true);
+  }
+}
 
 /*
- * [2D], [3D] fillet a 2D shape if h=0, or an extruded 3D shape if h>0
+ * [2D], [3D] fillet a 2D shape if h=0, or an extruded 3D shape if h>0.
+ * If no children are given, the module will produce a 2D shape if h=0, 
+ * or an extruded shape if h>0, that can be used subtractively to fillet 
+ * a single corner.
  * 
  * - e: [number] edge radius. Default is 1
  * - h: [number] extrude height. Default is 0 (2D shape)
  * - convexity: [integer] pass-through for linear_extrude() convexity parameter 
  * - center: [boolean] center the shape vertically if 3D
  */
-module fillet(e = 1, h = 0, convexity, center) { _edge(e, h, convexity, fillet = true, center = center) children(); }
-
+module fillet(e = 1, h = 0, convexity, center) { 
+  if($children != 0) {
+    _edge(e, h, convexity, fillet = true, center = center) children();
+  } else {
+    offs = [-1, 1] * e;
+    _single_edge(h, center)
+      difference() {
+        square(e * 2, center = true);
+        for(xo = offs)
+          for(yo = offs)
+            translate([xo, yo])
+              circle(r=e);
+      }
+  }
+}
 
 /* 
  * [3D] chamfer only along the extruded plane of a 3D shape. 
@@ -103,15 +129,24 @@ module octahedron(r = 0) {
 module _edge(e, h, convexity, fillet, center) {
 
   if(h == 0) {
-    
-    minkowski() {
-      offset(-e)
-        children();
+          
+    if(fillet) {
       
-      if(fillet) {
-	
+      minkowski() {
+      
+        offset(r = -2*e)
+          offset(delta = e)	  
+              children();
+          
         circle(r = e);
-      } else {
+      }
+    } else {
+
+      minkowski() {
+        off = e * sqrt(2) / tan(22.5);
+        offset(delta = -off, chamfer = true)
+          offset(delta = off - e)
+            children();
         
         rotate([0, 0, 45])
           square(e * sqrt(2), center = true);
@@ -121,7 +156,7 @@ module _edge(e, h, convexity, fillet, center) {
   
     minkowski() {
       
-      translate(z(e))
+      translate(z(center ? 0 : e))
         linear_extrude(h - (e*2), convexity = convexity, center = center)
           offset(-e)
             children();
@@ -137,6 +172,14 @@ module _edge(e, h, convexity, fillet, center) {
   }
 }
 
+module _single_edge(h, center) {
+  if(h == 0) {
+    children();
+  } else {
+    linear_extrude(height = h, convexity = 4, center = center)
+      children();
+  }
+}
 // test code
 //$fa = 6;
 //$fs = 0.1;
@@ -155,9 +198,9 @@ grid_array(spacing = 12, max_per_line = 4, $fa = 6, $fs = 0.1) {
   
   fillet(h=10) square(10);
   
-  fillet(h=10, e=2) circle(5);
+  translate([5, 5]) fillet(h=10, e=2) circle(5);
   
-  chamfer(h=10, e=3, center = true) circle(5);
+  translate([5, 5]) chamfer(h=10, e=3, center = true) circle(5);
   
   fillet(e = 4, h = 10) square(10);
   
@@ -165,6 +208,18 @@ grid_array(spacing = 12, max_per_line = 4, $fa = 6, $fs = 0.1) {
   
   fillet() chamfer() square(10);
   
-  chamfer_extrude() circle(5);
+  translate([5, 5]) chamfer_extrude() circle(5);
+  
+  translate([5, 5]) fillet(e = 5);
+  
+  translate([5, 5]) chamfer(e = 5);
+  
+  translate([5, 5]) fillet(e = 5, h=10);
+  
+  translate([5, 5]) chamfer(e = 5, h=10, center = true);
+  
+  fillet() { square([10, 5]); square([5, 10]); }
+  
+  chamfer() { square([10, 5]); square([5, 10]); }
 }
 
