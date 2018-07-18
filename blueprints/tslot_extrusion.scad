@@ -44,8 +44,9 @@ function TSlotExtrusion(size, length) = Obj(Template("l"), [length], [v(_TSLOT, 
  * [2D], [3D] render a tslot profile or a segment of extrusion based on the given tslot object
  * 
  * - tsl: [object] the desired extrusion to render
+ * - no_render: [boolean] proxy for the blueprint no_render parameter
  */
-module tslot_extrusion(tsl) {
+module tslot_extrusion(tsl, no_render = false) {
 	
 	module tslot_profile(p) {
 	
@@ -81,13 +82,15 @@ module tslot_extrusion(tsl) {
 			}
 	}
 	
-	echo(str(RENDER_BLUEPRINT_PREFIX, v(tsl, "side_w"), "x", v(tsl, "side_w"), " T-slot aluminum extrusion"));
+	extrude = (v(tsl, "l") != undef);
+	blueprint(str(v(tsl, "side_w"), "x", v(tsl, "side_w"), " T-slot aluminum extrusion", (extrude ? str(", ", v(tsl, "l"), " mm length") : "")), no_render) {
 	
-	if(v(tsl, "l") != undef) {
-		linear_extrude(height = v(tsl, "l"), convexity = 10)
-			tslot_profile(tsl);
-	} else {
-			tslot_profile(tsl);
+		if(extrude) {
+			linear_extrude(height = v(tsl, "l"), convexity = 10)
+				tslot_profile(tsl);
+		} else {
+				tslot_profile(tsl);
+		}
 	}
 }
 

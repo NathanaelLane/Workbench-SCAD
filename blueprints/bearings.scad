@@ -39,38 +39,41 @@ function RadialBearing(code) = v(_radial_bearing_library, code);
  * [3D] Render a radial ball bearing based on the given RadialBearing object
  * 
  * - rbr: [object] the bearing to render
+ * - no_render: [boolean] proxy for the blueprint no_render parameter
  */
-module radial_bearing(rbr, center = false) {
-  e = min(0.5, v(rbr, "w") / 10);
+module radial_bearing(rbr, center = false, no_render = false) {
+    
+  blueprint(str(v(rbr, "code"), " radial ball bearing"), no_render) {
   
-  echo(str(RENDER_BLUEPRINT_PREFIX, v(rbr, "code"), " radial ball bearing"));
+    e = min(0.5, v(rbr, "w") / 10);
   
-  translate(center ? z(0) : z(v(rbr, "w") / 2))
-    difference() {
-      
-      union() {
+    translate(center ? z(0) : z(v(rbr, "w") / 2))
+      difference() {
         
-        cylinder(d = v(rbr, "id") + v(rbr, "od") * 0.1, h = v(rbr, "w"), center = true);
-        
-        intersection() {
+        union() {
           
-          chamfer_extrude(h = v(rbr, "w"), e = e, center = true)
-            circle(d = v(rbr, "od"));
+          cylinder(d = v(rbr, "id") + v(rbr, "od") * 0.1, h = v(rbr, "w"), center = true);
+          
+          intersection() {
             
-          linear_extrude(height = v(rbr, "w"), center = true, convexity = 4)
-            difference() {
+            chamfer_extrude(h = v(rbr, "w"), e = e, center = true)
+              circle(d = v(rbr, "od"));
               
-              circle(d = v(rbr, "od") + 2);
-              
-              circle(d = v(rbr, "od") - e*3);
-            }
-        }
+            linear_extrude(height = v(rbr, "w"), center = true, convexity = 4)
+              difference() {
+                
+                circle(d = v(rbr, "od") + 2);
+                
+                circle(d = v(rbr, "od") - e*3);
+              }
+          }
 
-        cylinder(h = v(rbr, "w") - e*2, center = true, d = v(rbr, "od") - 1e-3);
+          cylinder(h = v(rbr, "w") - e*2, center = true, d = v(rbr, "od") - 1e-3);
+        }
+        
+        cylinder(d = v(rbr, "id"), h = v(rbr, "w") + 2, center = true);
       }
-      
-      cylinder(d = v(rbr, "id"), h = v(rbr, "w") + 2, center = true);
-    }
+  }
 }
 
 _linear_bearing_library = Collection(
@@ -95,49 +98,50 @@ function LinearBearing(code) = v(_linear_bearing_library, code);
  * [3D] Render a linear ball bearing based on the given LinearBearing object
  * 
  * - lbr: [object] the bearing to render
+ * - no_render: [boolean] proxy for the blueprint no_render parameter
  */
-module linear_bearing(lbr, center = false) {
+module linear_bearing(lbr, center = false, no_render = false) {
 
-  echo(str(RENDER_BLUEPRINT_PREFIX, v(lbr, "code"), " linear ball bearing"));
-  
-  e = 0.4;
-  
-  
-  translate(center ? z(0) : z(v(lbr, "l") / 2))
-    difference() {
-      
-      union() {
+  blueprint(str(v(lbr, "code"), " linear ball bearing"), no_render){
+    
+    e = 0.4;
+    
+    translate(center ? z(0) : z(v(lbr, "l") / 2))
+      difference() {
         
-        intersection() {
+        union() {
           
-          chamfer_extrude(h = v(lbr, "l"), e = e, center = true)
-            circle(d = v(lbr, "od"));
+          intersection() {
             
-          linear_extrude(height = v(lbr, "l"), center = true, convexity = 4)
-            difference() {
-              
+            chamfer_extrude(h = v(lbr, "l"), e = e, center = true)
               circle(d = v(lbr, "od"));
               
-              circle(d = v(lbr, "od") - 2);
-            }
-        }
-        
-        cylinder(h = v(lbr, "l") - e*2, d = v(lbr, "od") - e*2, center = true);
-      }
-      
-      cylinder(h = v(lbr, "l") + 2, d = v(lbr, "id"), center = true);
-      
-      for(m = [0, 1])
-        mirror(z(m))
-          translate(z(v(lbr, "retainer_groove_spacing") / -2))
-            linear_extrude(height = v(lbr, "retainer_groove_w"), convexity = 4)
+            linear_extrude(height = v(lbr, "l"), center = true, convexity = 4)
               difference() {
                 
-                circle(d = v(lbr, "od") + 2);
+                circle(d = v(lbr, "od"));
                 
-                circle(d = v(lbr, "od") - v(lbr, "retainer_groove_depth") * 2); 
+                circle(d = v(lbr, "od") - 2);
               }
-    }
+          }
+          
+          cylinder(h = v(lbr, "l") - e*2, d = v(lbr, "od") - e*2, center = true);
+        }
+        
+        cylinder(h = v(lbr, "l") + 2, d = v(lbr, "id"), center = true);
+        
+        for(m = [0, 1])
+          mirror(z(m))
+            translate(z(v(lbr, "retainer_groove_spacing") / -2))
+              linear_extrude(height = v(lbr, "retainer_groove_w"), convexity = 4)
+                difference() {
+                  
+                  circle(d = v(lbr, "od") + 2);
+                  
+                  circle(d = v(lbr, "od") - v(lbr, "retainer_groove_depth") * 2); 
+                }
+      }
+  }
 }
 
 // test code

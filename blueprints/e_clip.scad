@@ -38,29 +38,31 @@ function EClip(code) = v(_eclip_library, code);
  * [3D] Render an e-clip based on the given EClip object
  * 
  * - clp: [object] the clip to render
+ * - no_render: [boolean] proxy for the blueprint no_render parameter
  */
-module e_clip(clp){
+module e_clip(clp, no_render = false){
     
-  echo(str(RENDER_BLUEPRINT_PREFIX, v(clp, "id"), "mm id E-clip"));
+  blueprint(str(v(clp, "id"), "mm id E-clip"), no_render) {
   
-  linear_extrude(height = v(clp, "h"))
-    difference(){
-                
-      circle(d = v(clp, "od"));
-      
-      circle(d = v(clp, "id")); 
-      
-      intersection(){
-      
-          circle(d = v(clp, "od") * 0.75);
-          
-          for(a = [-1, 1])
-              rotate(z(125 * a))
-                  triangle(a = 70, h = v(clp, "od"));
-      }
-      
-      translate(y(v(clp, "id") / 2))
-          triangle(h = v(clp, "od"), a = 30);   
+    linear_extrude(height = v(clp, "h"))
+      difference(){
+                  
+        circle(d = v(clp, "od"));
+        
+        circle(d = v(clp, "id")); 
+        
+        intersection(){
+        
+            circle(d = v(clp, "od") * 0.75);
+            
+            for(a = [-1, 1])
+                rotate(z(125 * a))
+                    triangle(a = 70, h = v(clp, "od"));
+        }
+        
+        translate(y(v(clp, "id") / 2))
+            triangle(h = v(clp, "od"), a = 30);   
+    }
   }
 }
 

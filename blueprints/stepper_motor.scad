@@ -77,29 +77,32 @@ module stepper_screw_placement(stp, stretch = false) {
  * [3D] Render a stepper motor based on the given StepperMotor object
  * 
  * - stp: [object] the stepper to render
+ * - no_render: [boolean] proxy for the blueprint no_render parameter
  */
-module stepper_motor(stp) {
+module stepper_motor(stp, no_render = false) {
 
-	echo(str(RENDER_BLUEPRINT_PREFIX, v(stp, "product_name"), " ", v(stp, "size"), " stepper motor, ", 360 / v(stp, "steps_per_rev"), "-degree step angle"));
+	blueprint(str(v(stp, "product_name"), " ", v(stp, "size"), " stepper motor, ", 360 / v(stp, "steps_per_rev"), "-degree step angle"), no_render) {
 
-	difference() {
+		difference() {
 
-		// body
-		scale([1, 1, -1])
-			linear_extrude(height = v(stp, "body_l"))
-				chamfer(v(stp, "w") / 12) square(v(stp, "w"), center = true);
+			// body
+			scale([1, 1, -1])
+				linear_extrude(height = v(stp, "body_l"))
+					chamfer(v(stp, "w") / 12) square(v(stp, "w"), center = true);
 
-		// mounting holes		
-		stepper_screw_placement(stp)
-			translate(z(-v(stp, "screw_depth")))
-				cylinder(d = v(stp, "screw.thread_d"), h = v(stp, "screw_depth") + 1);			
+			// mounting holes		
+			stepper_screw_placement(stp)
+				translate(z(-v(stp, "screw_depth")))
+					cylinder(d = v(stp, "screw.thread_d"), h = v(stp, "screw_depth") + 1);			
+		}
+
+		// lip
+		cylinder(h = v(stp, "boss_h"), d = v(stp, "boss_d"));
+
+		// shaft
+		chamfer_extrude(h = v(stp, "shaft_l"), e=0.5) circle(d = v(stp, "shaft_d"));
+		
 	}
-
-	// lip
-	cylinder(h = v(stp, "boss_h"), d = v(stp, "boss_d"));
-
-	// shaft
-	chamfer_extrude(h = v(stp, "shaft_l"), e=0.5) circle(d = v(stp, "shaft_d"));
 }
 
 // test code

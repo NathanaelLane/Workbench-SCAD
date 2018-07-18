@@ -28,7 +28,6 @@ STEPPER_TYPE = Template("size, screw_spacing, screw, screw_depth, w, shaft_d, bo
 // t-slot aluminum extrusion
 TSLOT_PROFILE = Template("side_w, slot_w, lip_h, t_w, t_depth, corner_r, end_screw");
 
-
 // fasteners
 THREAD = Template("thread_d, pilot_d, pitch");
 SCREW_HEAD = Template("socket_type, head_type, socket_d, head_h, head_d");
@@ -43,9 +42,25 @@ LINEAR_BEARING = Template("code, id, od, l, retainer_groove_w, retainer_groove_d
 // e-clip
 E_CLIP = Template("h, od, id");
 
+// timing belt
+TIMING_BELT = Template("type, thickness, tooth_h, pitch");
 /*
  * [string] return the string prefix for the "echo" statement issued when rendering an object 
  * from within the Blueprint library. Wrapping it in a function allows for modules to "use" blueprints.scad 
  * instead of "include"-ing it.
  */
 function getRenderObjectPrefix() = RENDER_BLUEPRINT_PREFIX;
+
+/*
+ * [2D], [3D] "Echo" a text representation of the blueprint and then render it conditionally. 
+ * Blueprint implementations should wrap rendering code in this module for uniform implementation.
+ * 
+ * - id_string: [string] a string representation of the given object.
+ * - no_render: [boolean] a value indicating whether or not to render the geometry. Useful for 
+ *     generating BOMs
+ */
+module blueprint(id_string, no_render) {
+  echo(str(RENDER_BLUEPRINT_PREFIX, id_string));
+  if(!no_render)
+    children();
+}
