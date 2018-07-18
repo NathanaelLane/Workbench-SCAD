@@ -34,6 +34,7 @@ function Template(keystring) =
 			]);
 
 function _Template(arr) = ["&", arr];
+
 /* 
  * [object] create an Object structure
  * 
@@ -45,13 +46,28 @@ function _Template(arr) = ["&", arr];
  *     all of its prototypes are searched recursively for a value corresponding to the given key.
  */
 function Obj(template, values, prototypes=[]) = 
-	template[0] == "&" ?
+	is_template(template) ?
 		["$", prototypes, template[1], values]
 	:
-		template[0] == "$" ?
+		is_obj(template) ?
 			["$", concat(template[1], prototypes), template[2], values]
 		:
 			undef;
+			
+/*
+ * [boolean] Returns true if the argument is a Template structure, and false in most other cases.
+ * 
+ * - thing: the value to test
+ */ 	
+function is_template(thing) = (thing[0] == "&") && (len(thing) == 2);
+
+/*
+ * [boolean] Returns true if the argument is an Obj structure, and false in most other cases.
+ * 
+ * - thing: the value to test
+ */ 
+function is_obj(thing) = (thing[0] == "$") && (len(thing) == 4);
+
 /* 
  * access a named field from an object, including from within the prototype heirarchy, 
  * recursively using key heirarchy strings. If the object does not contain a value for the given key, 
@@ -147,7 +163,7 @@ function Map(kv) =
 	Obj(
 		_Template([ for (k=kv) k[0] ]),
 		[ for (v=kv) v[1] ]);
-		
+
 // test code
 
 threadT = Template("nominal_d, pilot_d, pitch");
